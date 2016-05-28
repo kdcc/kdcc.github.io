@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[My Octopress Blog]]></title>
+  <title><![CDATA[一念天堂]]></title>
   <link href="http://kdcc.github.io/atom.xml" rel="self"/>
   <link href="http://kdcc.github.io/"/>
-  <updated>2016-05-28T17:35:24+08:00</updated>
+  <updated>2016-05-28T18:10:03+08:00</updated>
   <id>http://kdcc.github.io/</id>
   <author>
-    <name><![CDATA[Your Name]]></name>
-    
+    <name><![CDATA[kd]]></name>
+    <email><![CDATA[liangkaidong@gmail.com]]></email>
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
