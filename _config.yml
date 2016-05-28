@@ -3,9 +3,9 @@
 # ----------------------- #
 
 url: http://kdcc.github.io
-title: My Octopress Blog
-subtitle: A blogging framework for hackers.
-author: Your Name
+title: 一念天堂
+subtitle: “我得到的全是侥幸，我失去的都是人生。”
+author: kd 
 simple_search: https://www.google.com/search
 description:
 
@@ -19,7 +19,7 @@ date_format: "ordinal"
 subscribe_rss: /atom.xml
 subscribe_email:
 # RSS feeds can list your email address if you like
-email:
+email: liangkaidong@gmail.com
 
 # ----------------------- #
 #    Jekyll & Plugins     #
