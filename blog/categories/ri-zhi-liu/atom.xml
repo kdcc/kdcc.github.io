@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 日志流 | 一念天堂]]></title>
   <link href="http://kdcc.github.io/blog/categories/ri-zhi-liu/atom.xml" rel="self"/>
   <link href="http://kdcc.github.io/"/>
-  <updated>2016-05-30T22:20:57+08:00</updated>
+  <updated>2016-05-30T22:22:50+08:00</updated>
   <id>http://kdcc.github.io/</id>
   <author>
     <name><![CDATA[kd]]></name>
@@ -27,9 +27,9 @@
 
 <ol>
 <li><p>从Yi Jie的角度看，我确实努力了，但代码就是没写得利落漂亮，想法就是不够全面完整；从我自己的角度看，其实一句话：<code>自我驱动不足</code> 。这自然是可以从工作中看出来，即使说自己觉得有些急于赶鸭子，但是工作本来就如此吧。</p></li>
-<li><p>为何驱动不足呢？显然，缺乏 <em><strong>技术热情</strong></em> 是硬伤。一方面，前面缺乏了解接触的机会， <em><strong>基础薄弱</strong></em> ，另一方面，则是自我的选择性逃避吧，而在基础薄弱的前提下，我更容易趋于保守，趋于完成任务。于是，有限时间下，自我驱动就很难跑起来，更何况自己心思不一。</p></li>
-<li><p>显然，从 <em><strong>数据库、scala、akka、restful API、产品、后台逻辑</strong></em>  的角度去 <em><strong>学习扎实基础、自主考虑问题</strong></em> ，才是可取之道。</p></li>
-<li><p>要有 <em><strong>主人翁的态度</strong></em> ，不要想着放完这枪就跑，当我都给人难以为继的感觉，人家凭什么信任你。</p></li>
+<li><p>为何驱动不足呢？显然，缺乏 <code>技术热情</code> 是硬伤。一方面，前面缺乏了解接触的机会， <code>基础薄弱</code> ，另一方面，则是自我的选择性逃避吧，而在基础薄弱的前提下，我更容易趋于保守，趋于完成任务。于是，有限时间下，自我驱动就很难跑起来，更何况自己心思不一。</p></li>
+<li><p>显然，从 <code>数据库、scala、akka、restful API、产品、后台逻辑</code>  的角度去 <code>学习扎实基础、自主考虑问题</code> ，才是可取之道。</p></li>
+<li><p>要有 <code>主人翁的态度</code> ，不要想着放完这枪就跑，当我都给人难以为继的感觉，人家凭什么信任你。</p></li>
 </ol>
 
 ]]></content>
