@@ -1,7 +1,9 @@
 ---
 layout: post
-title: "test"
+title: "如文"
 date: 2016-05-28 16:43:10 +0800
 comments: true
 categories: 
 ---
+
+THis is a testing blog.
