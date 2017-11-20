@@ -3,17 +3,17 @@ layout: post
 title: "Playframework Silhouette 用户框架之基本配置和 Token 生成篇"
 date: 2017-11-21 03:36:53 +0800
 comments: true
-categories: 
+categories: Scala
 ---
 
 * 添加依赖
-```
+{% codeblock build.sbt lang:scala %}
   libraryDependencies ++= Seq("com.mohiva" %% "play-silhouette" % "4.0.0",
   "com.mohiva" %% "play-silhouette-password-bcrypt" % "4.0.0",
   "com.mohiva" %% "play-silhouette-persistence" % "4.0.0")
-```
-* 创建配置文件 silhouette.conf
-```
+{% endcodeblock %}
+* 创建配置文件
+{% codeblock silhouette.conf lang:scala %}
 silhouette {
   authenticator.headerName = "X-Auth-Token"
   authenticator.issuerClaim = "waylens"
@@ -29,9 +29,9 @@ silhouette {
   google.clientSecret=
   google.scope=
 }
-```
+{% endcodeblock %}
 * 创建依赖配置类 SilhouetteModule
-```
+{% codeblock SilhouetteModule.scala lang:scala %}
 class EmptyIDGenerator extends IDGenerator {
   def generate: Future[String] = Future.successful("")
 }
@@ -104,17 +104,16 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     new GoogleProvider(httpLayer, stateProvider, configuration.underlying.as[OAuth2Settings]("silhouette.google"))
   }
 }
-```
+{% endcodeblock %}
 * 在配置中启用 SilhouetteModule 模块
-```
+{% codeblock application.conf lang:scala %}
 play.modules {
   enabled += "modules.SilhouetteModule"
   ...
 }
-```
+{% endcodeblock %}
 * 注册、登录时生成 (新)token
-```
-// 依赖代码
+{% codeblock 依赖代码 lang:scala %}
 case class HornIdentity(
     userID: String,
     email: Option[String],
@@ -179,10 +178,9 @@ trait AuthenticatorService[T <: Authenticator] extends ExecutionContextProvider 
   def init(authenticator: T)(implicit request: RequestHeader): Future[T#Value]
   ...
 }
-```
+{% endcodeblock %}
 
-```
-// 主代码
+{% codeblock 主代码 lang:scala %}
 class UserController @Inject()(userService: UserService, silhouette: Silhouette[JWTEnv]) extends Controller {
   def signin = Action.async(parse.json) { implicit request =>
     ...
@@ -222,4 +220,4 @@ class UserController @Inject()(userService: UserService, silhouette: Silhouette[
     }
   }
 }
-```
+{% endcodeblock %}
