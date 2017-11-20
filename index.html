@@ -95,20 +95,23 @@
 </ul>
 
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>build.sbt </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>  libraryDependencies ++= Seq("com.mohiva" %% "play-silhouette" % "4.0.0",
-</span><span class='line'>  "com.mohiva" %% "play-silhouette-password-bcrypt" % "4.0.0",
-</span><span class='line'>  "com.mohiva" %% "play-silhouette-persistence" % "4.0.0")</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'>  <span class="n">libraryDependencies</span> <span class="o">++=</span> <span class="nc">Seq</span><span class="o">(</span><span class="s">&quot;com.mohiva&quot;</span> <span class="o">%%</span> <span class="s">&quot;play-silhouette&quot;</span> <span class="o">%</span> <span class="s">&quot;4.0.0&quot;</span><span class="o">,</span>
+</span><span class='line'>  <span class="s">&quot;com.mohiva&quot;</span> <span class="o">%%</span> <span class="s">&quot;play-silhouette-password-bcrypt&quot;</span> <span class="o">%</span> <span class="s">&quot;4.0.0&quot;</span><span class="o">,</span>
+</span><span class='line'>  <span class="s">&quot;com.mohiva&quot;</span> <span class="o">%%</span> <span class="s">&quot;play-silhouette-persistence&quot;</span> <span class="o">%</span> <span class="s">&quot;4.0.0&quot;</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <ul>
-<li>创建配置文件 silhouette.conf</li>
+<li>创建配置文件</li>
 </ul>
 
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>silhouette.conf </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -123,21 +126,22 @@
 <span class='line-number'>13</span>
 <span class='line-number'>14</span>
 <span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>silhouette {
-</span><span class='line'>  authenticator.headerName = "X-Auth-Token"
-</span><span class='line'>  authenticator.issuerClaim = "waylens"
-</span><span class='line'>  authenticator.encryptSubject = false
-</span><span class='line'>  authenticator.authenticatorExpiry = "365d"
-</span><span class='line'>  authenticator.sharedSecret= "changeme"
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">silhouette</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">authenticator</span><span class="o">.</span><span class="n">headerName</span> <span class="k">=</span> <span class="s">&quot;X-Auth-Token&quot;</span>
+</span><span class='line'>  <span class="n">authenticator</span><span class="o">.</span><span class="n">issuerClaim</span> <span class="k">=</span> <span class="s">&quot;waylens&quot;</span>
+</span><span class='line'>  <span class="n">authenticator</span><span class="o">.</span><span class="n">encryptSubject</span> <span class="k">=</span> <span class="kc">false</span>
+</span><span class='line'>  <span class="n">authenticator</span><span class="o">.</span><span class="n">authenticatorExpiry</span> <span class="k">=</span> <span class="s">&quot;365d&quot;</span>
+</span><span class='line'>  <span class="n">authenticator</span><span class="o">.</span><span class="n">sharedSecret</span><span class="k">=</span> <span class="s">&quot;changeme&quot;</span>
 </span><span class='line'>
-</span><span class='line'>  # Google provider
-</span><span class='line'>  google.authorizationURL=
-</span><span class='line'>  google.accessTokenURL=
-</span><span class='line'>  google.redirectURL=
-</span><span class='line'>  google.clientID=
-</span><span class='line'>  google.clientSecret=
-</span><span class='line'>  google.scope=
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'>  <span class="k">#</span> <span class="nc">Google</span> <span class="n">provider</span>
+</span><span class='line'>  <span class="n">google</span><span class="o">.</span><span class="n">authorizationURL</span><span class="k">=</span>
+</span><span class='line'>  <span class="n">google</span><span class="o">.</span><span class="n">accessTokenURL</span><span class="k">=</span>
+</span><span class='line'>  <span class="n">google</span><span class="o">.</span><span class="n">redirectURL</span><span class="k">=</span>
+</span><span class='line'>  <span class="n">google</span><span class="o">.</span><span class="n">clientID</span><span class="k">=</span>
+</span><span class='line'>  <span class="n">google</span><span class="o">.</span><span class="n">clientSecret</span><span class="k">=</span>
+</span><span class='line'>  <span class="n">google</span><span class="o">.</span><span class="n">scope</span><span class="k">=</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <ul>
@@ -145,7 +149,8 @@
 </ul>
 
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>SilhouetteModule.scala </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -217,78 +222,79 @@
 <span class='line-number'>70</span>
 <span class='line-number'>71</span>
 <span class='line-number'>72</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>class EmptyIDGenerator extends IDGenerator {
-</span><span class='line'>  def generate: Future[String] = Future.successful("")
-</span><span class='line'>}
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">class</span> <span class="nc">EmptyIDGenerator</span> <span class="k">extends</span> <span class="nc">IDGenerator</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">generate</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Future</span><span class="o">.</span><span class="n">successful</span><span class="o">(</span><span class="s">&quot;&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="o">}</span>
 </span><span class='line'>
-</span><span class='line'>/**
-</span><span class='line'> * 用 Guice 的 AbstractModule 把 Silhouette 的所有依赖装配起来
-</span><span class='line'> * 注意后面的组件装配会依赖到前面的装配
-</span><span class='line'> */
+</span><span class='line'><span class="cm">/**</span>
+</span><span class='line'><span class="cm"> * 用 Guice 的 AbstractModule 把 Silhouette 的所有依赖装配起来</span>
+</span><span class='line'><span class="cm"> * 注意后面的组件装配会依赖到前面的装配</span>
+</span><span class='line'><span class="cm"> */</span>
 </span><span class='line'>
-</span><span class='line'>class SilhouetteModule extends AbstractModule with ScalaModule {
+</span><span class='line'><span class="k">class</span> <span class="nc">SilhouetteModule</span> <span class="k">extends</span> <span class="nc">AbstractModule</span> <span class="k">with</span> <span class="nc">ScalaModule</span> <span class="o">{</span>
 </span><span class='line'>
-</span><span class='line'>  /**
-</span><span class='line'>   * Configures the module.
-</span><span class='line'>   */
-</span><span class='line'>  def configure() {
-</span><span class='line'>    bind[UserDAO].to[UserDAOPsqlImpl]
-</span><span class='line'>    bind[CacheLayer].to[PlayCacheLayer]
-</span><span class='line'>    bind[OAuth2StateProvider].to[DummyStateProvider]
-</span><span class='line'>    bind[IDGenerator].to[EmptyIDGenerator]
-</span><span class='line'>    bind[PasswordHasher].toInstance(new BCryptPasswordHasher)
-</span><span class='line'>    bind[EventBus].toInstance(EventBus())
-</span><span class='line'>    bind[Clock].toInstance(Clock())
-</span><span class='line'>    bind[Silhouette[JWTEnv]].to[SilhouetteProvider[JWTEnv]]
-</span><span class='line'>    bind[SecuredErrorHandler].to[JsonResponseErrorHandler]
-</span><span class='line'>    bind[AuthenticatorEncoder].to[Base64AuthenticatorEncoder]
-</span><span class='line'>  }
+</span><span class='line'>  <span class="cm">/**</span>
+</span><span class='line'><span class="cm">   * Configures the module.</span>
+</span><span class='line'><span class="cm">   */</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">configure</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">bind</span><span class="o">[</span><span class="kt">UserDAO</span><span class="o">].</span><span class="n">to</span><span class="o">[</span><span class="kt">UserDAOPsqlImpl</span><span class="o">]</span>
+</span><span class='line'>    <span class="n">bind</span><span class="o">[</span><span class="kt">CacheLayer</span><span class="o">].</span><span class="n">to</span><span class="o">[</span><span class="kt">PlayCacheLayer</span><span class="o">]</span>
+</span><span class='line'>    <span class="n">bind</span><span class="o">[</span><span class="kt">OAuth2StateProvider</span><span class="o">].</span><span class="n">to</span><span class="o">[</span><span class="kt">DummyStateProvider</span><span class="o">]</span>
+</span><span class='line'>    <span class="n">bind</span><span class="o">[</span><span class="kt">IDGenerator</span><span class="o">].</span><span class="n">to</span><span class="o">[</span><span class="kt">EmptyIDGenerator</span><span class="o">]</span>
+</span><span class='line'>    <span class="n">bind</span><span class="o">[</span><span class="kt">PasswordHasher</span><span class="o">].</span><span class="n">toInstance</span><span class="o">(</span><span class="k">new</span> <span class="nc">BCryptPasswordHasher</span><span class="o">)</span>
+</span><span class='line'>    <span class="n">bind</span><span class="o">[</span><span class="kt">EventBus</span><span class="o">].</span><span class="n">toInstance</span><span class="o">(</span><span class="nc">EventBus</span><span class="o">())</span>
+</span><span class='line'>    <span class="n">bind</span><span class="o">[</span><span class="kt">Clock</span><span class="o">].</span><span class="n">toInstance</span><span class="o">(</span><span class="nc">Clock</span><span class="o">())</span>
+</span><span class='line'>    <span class="n">bind</span><span class="o">[</span><span class="kt">Silhouette</span><span class="o">[</span><span class="kt">JWTEnv</span><span class="o">]].</span><span class="n">to</span><span class="o">[</span><span class="kt">SilhouetteProvider</span><span class="o">[</span><span class="kt">JWTEnv</span><span class="o">]]</span>
+</span><span class='line'>    <span class="n">bind</span><span class="o">[</span><span class="kt">SecuredErrorHandler</span><span class="o">].</span><span class="n">to</span><span class="o">[</span><span class="kt">JsonResponseErrorHandler</span><span class="o">]</span>
+</span><span class='line'>    <span class="n">bind</span><span class="o">[</span><span class="kt">AuthenticatorEncoder</span><span class="o">].</span><span class="n">to</span><span class="o">[</span><span class="kt">Base64AuthenticatorEncoder</span><span class="o">]</span>
+</span><span class='line'>  <span class="o">}</span>
 </span><span class='line'>
-</span><span class='line'>  @Provides
-</span><span class='line'>  def provideHTTPLayer(client: WSClient): HTTPLayer = new PlayHTTPLayer(client)
+</span><span class='line'>  <span class="nd">@Provides</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">provideHTTPLayer</span><span class="o">(</span><span class="n">client</span><span class="k">:</span> <span class="kt">WSClient</span><span class="o">)</span><span class="k">:</span> <span class="kt">HTTPLayer</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">PlayHTTPLayer</span><span class="o">(</span><span class="n">client</span><span class="o">)</span>
 </span><span class='line'>
-</span><span class='line'>  @Provides
-</span><span class='line'>  def provideAuthenticatorService(
-</span><span class='line'>    cacheLayer: CacheLayer,
-</span><span class='line'>    authenticatorEncoder: AuthenticatorEncoder,
-</span><span class='line'>    idGenerator: IDGenerator,
-</span><span class='line'>    configuration: Configuration,
-</span><span class='line'>    clock: Clock): AuthenticatorService[JWTAuthenticator] = {
+</span><span class='line'>  <span class="nd">@Provides</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">provideAuthenticatorService</span><span class="o">(</span>
+</span><span class='line'>    <span class="n">cacheLayer</span><span class="k">:</span> <span class="kt">CacheLayer</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">authenticatorEncoder</span><span class="k">:</span> <span class="kt">AuthenticatorEncoder</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">idGenerator</span><span class="k">:</span> <span class="kt">IDGenerator</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">configuration</span><span class="k">:</span> <span class="kt">Configuration</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">clock</span><span class="k">:</span> <span class="kt">Clock</span><span class="o">)</span><span class="k">:</span> <span class="kt">AuthenticatorService</span><span class="o">[</span><span class="kt">JWTAuthenticator</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
 </span><span class='line'>
-</span><span class='line'>    val config = JWTAuthenticatorSettings(
-</span><span class='line'>      fieldName = configuration.underlying.as[String]("silhouette.authenticator.headerName"),
-</span><span class='line'>      issuerClaim = configuration.underlying.as[String]("silhouette.authenticator.issuerClaim"),
-</span><span class='line'>      authenticatorExpiry = configuration.underlying.as[FiniteDuration]("silhouette.authenticator.authenticatorExpiry"),
-</span><span class='line'>      sharedSecret = configuration.underlying.as[String]("silhouette.authenticator.sharedSecret"))
-</span><span class='line'>    new JWTAuthenticatorService(config, None, authenticatorEncoder, idGenerator, clock)
-</span><span class='line'>  }
+</span><span class='line'>    <span class="k">val</span> <span class="n">config</span> <span class="k">=</span> <span class="nc">JWTAuthenticatorSettings</span><span class="o">(</span>
+</span><span class='line'>      <span class="n">fieldName</span> <span class="k">=</span> <span class="n">configuration</span><span class="o">.</span><span class="n">underlying</span><span class="o">.</span><span class="n">as</span><span class="o">[</span><span class="kt">String</span><span class="o">](</span><span class="s">&quot;silhouette.authenticator.headerName&quot;</span><span class="o">),</span>
+</span><span class='line'>      <span class="n">issuerClaim</span> <span class="k">=</span> <span class="n">configuration</span><span class="o">.</span><span class="n">underlying</span><span class="o">.</span><span class="n">as</span><span class="o">[</span><span class="kt">String</span><span class="o">](</span><span class="s">&quot;silhouette.authenticator.issuerClaim&quot;</span><span class="o">),</span>
+</span><span class='line'>      <span class="n">authenticatorExpiry</span> <span class="k">=</span> <span class="n">configuration</span><span class="o">.</span><span class="n">underlying</span><span class="o">.</span><span class="n">as</span><span class="o">[</span><span class="kt">FiniteDuration</span><span class="o">](</span><span class="s">&quot;silhouette.authenticator.authenticatorExpiry&quot;</span><span class="o">),</span>
+</span><span class='line'>      <span class="n">sharedSecret</span> <span class="k">=</span> <span class="n">configuration</span><span class="o">.</span><span class="n">underlying</span><span class="o">.</span><span class="n">as</span><span class="o">[</span><span class="kt">String</span><span class="o">](</span><span class="s">&quot;silhouette.authenticator.sharedSecret&quot;</span><span class="o">))</span>
+</span><span class='line'>    <span class="k">new</span> <span class="nc">JWTAuthenticatorService</span><span class="o">(</span><span class="n">config</span><span class="o">,</span> <span class="nc">None</span><span class="o">,</span> <span class="n">authenticatorEncoder</span><span class="o">,</span> <span class="n">idGenerator</span><span class="o">,</span> <span class="n">clock</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
 </span><span class='line'>
-</span><span class='line'>  @Provides
-</span><span class='line'>  def provideEnvironment(
-</span><span class='line'>    userService: UserService,
-</span><span class='line'>    authenticatorService: AuthenticatorService[JWTAuthenticator],
-</span><span class='line'>    eventBus: EventBus): Environment[JWTEnv] = {
+</span><span class='line'>  <span class="nd">@Provides</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">provideEnvironment</span><span class="o">(</span>
+</span><span class='line'>    <span class="n">userService</span><span class="k">:</span> <span class="kt">UserService</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">authenticatorService</span><span class="k">:</span> <span class="kt">AuthenticatorService</span><span class="o">[</span><span class="kt">JWTAuthenticator</span><span class="o">],</span>
+</span><span class='line'>    <span class="n">eventBus</span><span class="k">:</span> <span class="kt">EventBus</span><span class="o">)</span><span class="k">:</span> <span class="kt">Environment</span><span class="o">[</span><span class="kt">JWTEnv</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
 </span><span class='line'>
-</span><span class='line'>    Environment[JWTEnv](
-</span><span class='line'>      userService,
-</span><span class='line'>      authenticatorService,
-</span><span class='line'>      Seq.empty,
-</span><span class='line'>      eventBus
-</span><span class='line'>    )
-</span><span class='line'>  }
+</span><span class='line'>    <span class="nc">Environment</span><span class="o">[</span><span class="kt">JWTEnv</span><span class="o">](</span>
+</span><span class='line'>      <span class="n">userService</span><span class="o">,</span>
+</span><span class='line'>      <span class="n">authenticatorService</span><span class="o">,</span>
+</span><span class='line'>      <span class="nc">Seq</span><span class="o">.</span><span class="n">empty</span><span class="o">,</span>
+</span><span class='line'>      <span class="n">eventBus</span>
+</span><span class='line'>    <span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
 </span><span class='line'>
-</span><span class='line'>  @Provides
-</span><span class='line'>  def provideAvatarService(httpLayer: HTTPLayer): AvatarService = new GravatarService(httpLayer)
+</span><span class='line'>  <span class="nd">@Provides</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">provideAvatarService</span><span class="o">(</span><span class="n">httpLayer</span><span class="k">:</span> <span class="kt">HTTPLayer</span><span class="o">)</span><span class="k">:</span> <span class="kt">AvatarService</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">GravatarService</span><span class="o">(</span><span class="n">httpLayer</span><span class="o">)</span>
 </span><span class='line'>
-</span><span class='line'>  @Provides
-</span><span class='line'>  def provideGoogleProvider(
-</span><span class='line'>    httpLayer: HTTPLayer,
-</span><span class='line'>    stateProvider: OAuth2StateProvider,
-</span><span class='line'>    configuration: Configuration): GoogleProvider = {
+</span><span class='line'>  <span class="nd">@Provides</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">provideGoogleProvider</span><span class="o">(</span>
+</span><span class='line'>    <span class="n">httpLayer</span><span class="k">:</span> <span class="kt">HTTPLayer</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">stateProvider</span><span class="k">:</span> <span class="kt">OAuth2StateProvider</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">configuration</span><span class="k">:</span> <span class="kt">Configuration</span><span class="o">)</span><span class="k">:</span> <span class="kt">GoogleProvider</span> <span class="o">=</span> <span class="o">{</span>
 </span><span class='line'>
-</span><span class='line'>    new GoogleProvider(httpLayer, stateProvider, configuration.underlying.as[OAuth2Settings]("silhouette.google"))
-</span><span class='line'>  }
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'>    <span class="k">new</span> <span class="nc">GoogleProvider</span><span class="o">(</span><span class="n">httpLayer</span><span class="o">,</span> <span class="n">stateProvider</span><span class="o">,</span> <span class="n">configuration</span><span class="o">.</span><span class="n">underlying</span><span class="o">.</span><span class="n">as</span><span class="o">[</span><span class="kt">OAuth2Settings</span><span class="o">](</span><span class="s">&quot;silhouette.google&quot;</span><span class="o">))</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <ul>
@@ -296,14 +302,16 @@
 </ul>
 
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>application.conf </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>play.modules {
-</span><span class='line'>  enabled += "modules.SilhouetteModule"
-</span><span class='line'>  ...
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">play</span><span class="o">.</span><span class="n">modules</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">enabled</span> <span class="o">+=</span> <span class="s">&quot;modules.SilhouetteModule&quot;</span>
+</span><span class='line'>  <span class="o">...</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <ul>
@@ -311,7 +319,8 @@
 </ul>
 
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>依赖代码 </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -375,77 +384,77 @@
 <span class='line-number'>62</span>
 <span class='line-number'>63</span>
 <span class='line-number'>64</span>
-<span class='line-number'>65</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>// 依赖代码
-</span><span class='line'>case class HornIdentity(
-</span><span class='line'>    userID: String,
-</span><span class='line'>    email: Option[String],
-</span><span class='line'>    userName: String,
-</span><span class='line'>    displayName: String,
-</span><span class='line'>    avatarUrl: String,
-</span><span class='line'>    isVerified: Boolean,
-</span><span class='line'>    jwtVersion: String)
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">case</span> <span class="k">class</span> <span class="nc">HornIdentity</span><span class="o">(</span>
+</span><span class='line'>    <span class="n">userID</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">email</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">String</span><span class="o">],</span>
+</span><span class='line'>    <span class="n">userName</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">displayName</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">avatarUrl</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">isVerified</span><span class="k">:</span> <span class="kt">Boolean</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">jwtVersion</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span>
 </span><span class='line'>
-</span><span class='line'>trait JWTEnv extends Env {
-</span><span class='line'>  type I = HornIdentity
-</span><span class='line'>  type A = JWTAuthenticator
-</span><span class='line'>}
+</span><span class='line'><span class="k">trait</span> <span class="nc">JWTEnv</span> <span class="k">extends</span> <span class="nc">Env</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">type</span> <span class="kt">I</span> <span class="o">=</span> <span class="nc">HornIdentity</span>
+</span><span class='line'>  <span class="k">type</span> <span class="kt">A</span> <span class="o">=</span> <span class="nc">JWTAuthenticator</span>
+</span><span class='line'><span class="o">}</span>
 </span><span class='line'>
-</span><span class='line'>trait ExpirableAuthenticator extends Authenticator {
-</span><span class='line'>  
-</span><span class='line'>  val lastUsedDateTime: DateTime
+</span><span class='line'><span class="k">trait</span> <span class="nc">ExpirableAuthenticator</span> <span class="k">extends</span> <span class="nc">Authenticator</span> <span class="o">{</span>
 </span><span class='line'>
-</span><span class='line'>  val expirationDateTime: DateTime
+</span><span class='line'>  <span class="k">val</span> <span class="n">lastUsedDateTime</span><span class="k">:</span> <span class="kt">DateTime</span>
 </span><span class='line'>
-</span><span class='line'>  val idleTimeout: Option[FiniteDuration]
+</span><span class='line'>  <span class="k">val</span> <span class="n">expirationDateTime</span><span class="k">:</span> <span class="kt">DateTime</span>
 </span><span class='line'>
-</span><span class='line'>  override def isValid = !isExpired && !isTimedOut
+</span><span class='line'>  <span class="k">val</span> <span class="n">idleTimeout</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">FiniteDuration</span><span class="o">]</span>
 </span><span class='line'>
-</span><span class='line'>  def isExpired = expirationDateTime.isBeforeNow
+</span><span class='line'>  <span class="k">override</span> <span class="k">def</span> <span class="n">isValid</span> <span class="k">=</span> <span class="o">!</span><span class="n">isExpired</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">isTimedOut</span>
 </span><span class='line'>
-</span><span class='line'>  def isTimedOut = idleTimeout.isDefined && (lastUsedDateTime + idleTimeout.get).isBeforeNow
-</span><span class='line'>}
+</span><span class='line'>  <span class="k">def</span> <span class="n">isExpired</span> <span class="k">=</span> <span class="n">expirationDateTime</span><span class="o">.</span><span class="n">isBeforeNow</span>
 </span><span class='line'>
-</span><span class='line'>case class LoginInfo(providerID: String, providerKey: String)
+</span><span class='line'>  <span class="k">def</span> <span class="n">isTimedOut</span> <span class="k">=</span> <span class="n">idleTimeout</span><span class="o">.</span><span class="n">isDefined</span> <span class="o">&amp;&amp;</span> <span class="o">(</span><span class="n">lastUsedDateTime</span> <span class="o">+</span> <span class="n">idleTimeout</span><span class="o">.</span><span class="n">get</span><span class="o">).</span><span class="n">isBeforeNow</span>
+</span><span class='line'><span class="o">}</span>
 </span><span class='line'>
-</span><span class='line'>case class JWTAuthenticator(
-</span><span class='line'>  id: String,
-</span><span class='line'>  loginInfo: LoginInfo,
-</span><span class='line'>  lastUsedDateTime: DateTime,
-</span><span class='line'>  expirationDateTime: DateTime,
-</span><span class='line'>  idleTimeout: Option[FiniteDuration],
-</span><span class='line'>  customClaims: Option[JsObject] = None)
-</span><span class='line'>  extends StorableAuthenticator with ExpirableAuthenticator {
+</span><span class='line'><span class="k">case</span> <span class="k">class</span> <span class="nc">LoginInfo</span><span class="o">(</span><span class="n">providerID</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">providerKey</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span>
 </span><span class='line'>
-</span><span class='line'>  /**
-</span><span class='line'>   * The Type of the generated value an authenticator will be serialized to.
-</span><span class='line'>   */
-</span><span class='line'>  override type Value = String
-</span><span class='line'>}
+</span><span class='line'><span class="k">case</span> <span class="k">class</span> <span class="nc">JWTAuthenticator</span><span class="o">(</span>
+</span><span class='line'>  <span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
+</span><span class='line'>  <span class="n">loginInfo</span><span class="k">:</span> <span class="kt">LoginInfo</span><span class="o">,</span>
+</span><span class='line'>  <span class="n">lastUsedDateTime</span><span class="k">:</span> <span class="kt">DateTime</span><span class="o">,</span>
+</span><span class='line'>  <span class="n">expirationDateTime</span><span class="k">:</span> <span class="kt">DateTime</span><span class="o">,</span>
+</span><span class='line'>  <span class="n">idleTimeout</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">FiniteDuration</span><span class="o">],</span>
+</span><span class='line'>  <span class="n">customClaims</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">JsObject</span><span class="o">]</span> <span class="k">=</span> <span class="nc">None</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">extends</span> <span class="nc">StorableAuthenticator</span> <span class="k">with</span> <span class="nc">ExpirableAuthenticator</span> <span class="o">{</span>
 </span><span class='line'>
-</span><span class='line'>trait AuthenticatorService[T &lt;: Authenticator] extends ExecutionContextProvider {
-</span><span class='line'>  /**
-</span><span class='line'>   * Creates a new authenticator for the specified login info.
-</span><span class='line'>   */
-</span><span class='line'>  def create(loginInfo: LoginInfo)(implicit request: RequestHeader): Future[T]
+</span><span class='line'>  <span class="cm">/**</span>
+</span><span class='line'><span class="cm">   * The Type of the generated value an authenticator will be serialized to.</span>
+</span><span class='line'><span class="cm">   */</span>
+</span><span class='line'>  <span class="k">override</span> <span class="k">type</span> <span class="kt">Value</span> <span class="o">=</span> <span class="nc">String</span>
+</span><span class='line'><span class="o">}</span>
 </span><span class='line'>
-</span><span class='line'>  /**
-</span><span class='line'>   * Retrieves the authenticator from request.
-</span><span class='line'>   */
-</span><span class='line'>  def retrieve[B](implicit request: ExtractableRequest[B]): Future[Option[T]]
+</span><span class='line'><span class="k">trait</span> <span class="nc">AuthenticatorService</span><span class="o">[</span><span class="kt">T</span> <span class="k">&lt;:</span> <span class="kt">Authenticator</span><span class="o">]</span> <span class="nc">extends</span> <span class="nc">ExecutionContextProvider</span> <span class="o">{</span>
+</span><span class='line'>  <span class="cm">/**</span>
+</span><span class='line'><span class="cm">   * Creates a new authenticator for the specified login info.</span>
+</span><span class='line'><span class="cm">   */</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">create</span><span class="o">(</span><span class="n">loginInfo</span><span class="k">:</span> <span class="kt">LoginInfo</span><span class="o">)(</span><span class="k">implicit</span> <span class="n">request</span><span class="k">:</span> <span class="kt">RequestHeader</span><span class="o">)</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">T</span><span class="o">]</span>
 </span><span class='line'>
-</span><span class='line'>  /**
-</span><span class='line'>   * Initializes an authenticator and instead of embedding into the the request or result, it returns
-</span><span class='line'>   * the serialized value.
-</span><span class='line'>   */
-</span><span class='line'>  def init(authenticator: T)(implicit request: RequestHeader): Future[T#Value]
-</span><span class='line'>  ...
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'>  <span class="cm">/**</span>
+</span><span class='line'><span class="cm">   * Retrieves the authenticator from request.</span>
+</span><span class='line'><span class="cm">   */</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">retrieve</span><span class="o">[</span><span class="kt">B</span><span class="o">](</span><span class="k">implicit</span> <span class="n">request</span><span class="k">:</span> <span class="kt">ExtractableRequest</span><span class="o">[</span><span class="kt">B</span><span class="o">])</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">Option</span><span class="o">[</span><span class="kt">T</span><span class="o">]]</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="cm">/**</span>
+</span><span class='line'><span class="cm">   * Initializes an authenticator and instead of embedding into the the request or result, it returns</span>
+</span><span class='line'><span class="cm">   * the serialized value.</span>
+</span><span class='line'><span class="cm">   */</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">init</span><span class="o">(</span><span class="n">authenticator</span><span class="k">:</span> <span class="kt">T</span><span class="o">)(</span><span class="k">implicit</span> <span class="n">request</span><span class="k">:</span> <span class="kt">RequestHeader</span><span class="o">)</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">T</span><span class="k">#</span><span class="kt">Value</span><span class="o">]</span>
+</span><span class='line'>  <span class="o">...</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>主代码 </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -484,47 +493,46 @@
 <span class='line-number'>37</span>
 <span class='line-number'>38</span>
 <span class='line-number'>39</span>
-<span class='line-number'>40</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>// 主代码
-</span><span class='line'>class UserController @Inject()(userService: UserService, silhouette: Silhouette[JWTEnv]) extends Controller {
-</span><span class='line'>  def signin = Action.async(parse.json) { implicit request =&gt;
-</span><span class='line'>    ...
-</span><span class='line'>    // 按某种加密算法校验邮箱密码是否正确，是的话返回用户信息
-</span><span class='line'>    userService.authenticate(email, password).map { 
-</span><span class='line'>      case Some(user) =&gt;
-</span><span class='line'>        (for {
-</span><span class='line'>          loginID &lt;- userService.login(user, deviceType, deviceID)
-</span><span class='line'>          /**
-</span><span class='line'>          * create 的函数定义为： 
-</span><span class='line'>          * def create(loginInfo: LoginInfo)(implicit request: RequestHeader): Future[T]
-</span><span class='line'>          * T 会被解析为 JWTEnv#A，且 type A = JWTAuthenticator，
-</span><span class='line'>          * 因此 authenticator 的类型为 JWTAuthenticator，至于 JWT 下篇再叙，
-</span><span class='line'>          * 同时给 authenticator 传入了自定义的 token 版本号
-</span><span class='line'>          *
-</span><span class='line'>          * init 的函数定义为：
-</span><span class='line'>          * def init(authenticator: T)(implicit request: RequestHeader): Future[T#Value]
-</span><span class='line'>          * 因此 token 类型为 JWTEnv#A#Value = JWTAuthenticator#Value = String，
-</span><span class='line'>          * 即是 JWTAuthenticator 为该 LoginInfo(providerID: String, providerKey: String) + jwtVersion 生成的一个令牌，
-</span><span class='line'>          * 其中只要有一项未通过服务器校验，token 即非法
-</span><span class='line'>          **/
-</span><span class='line'>          authenticator &lt;- 
-</span><span class='line'>            silhouette.env.authenticatorService
-</span><span class='line'>              .create(LoginInfo(ProviderKey.waylens.id.toString, user.userID))
-</span><span class='line'>              .map(_.copy(id = loginID.toString, customClaims = Some(JsObject(Map("version"-&gt; JsString(user.jwtVersion))))))
-</span><span class='line'>          token &lt;- silhouette.env.authenticatorService.init(authenticator)
-</span><span class='line'>        } yield (token, authenticator)).map {
-</span><span class='line'>          case (token, authenticator) =&gt;
-</span><span class='line'>            val res = SigninResponse(
-</span><span class='line'>              user.identity.waylensUser,
-</span><span class='line'>              token,
-</span><span class='line'>              // 同时返回 token 有效时长
-</span><span class='line'>              authenticator.expirationDateTime.getMillis / 1000 * 1000)
-</span><span class='line'>            ok(res)
-</span><span class='line'>        }
-</span><span class='line'>      case None =&gt; ...
-</span><span class='line'>    }
-</span><span class='line'>  }
-</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">class</span> <span class="nc">UserController</span> <span class="nd">@Inject</span><span class="o">()(</span><span class="n">userService</span><span class="k">:</span> <span class="kt">UserService</span><span class="o">,</span> <span class="n">silhouette</span><span class="k">:</span> <span class="kt">Silhouette</span><span class="o">[</span><span class="kt">JWTEnv</span><span class="o">])</span> <span class="k">extends</span> <span class="nc">Controller</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">signin</span> <span class="k">=</span> <span class="nc">Action</span><span class="o">.</span><span class="n">async</span><span class="o">(</span><span class="n">parse</span><span class="o">.</span><span class="n">json</span><span class="o">)</span> <span class="o">{</span> <span class="k">implicit</span> <span class="n">request</span> <span class="k">=&gt;</span>
+</span><span class='line'>    <span class="o">...</span>
+</span><span class='line'>    <span class="c1">// 按某种加密算法校验邮箱密码是否正确，是的话返回用户信息</span>
+</span><span class='line'>    <span class="n">userService</span><span class="o">.</span><span class="n">authenticate</span><span class="o">(</span><span class="n">email</span><span class="o">,</span> <span class="n">password</span><span class="o">).</span><span class="n">map</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">case</span> <span class="nc">Some</span><span class="o">(</span><span class="n">user</span><span class="o">)</span> <span class="k">=&gt;</span>
+</span><span class='line'>        <span class="o">(</span><span class="k">for</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">loginID</span> <span class="k">&lt;-</span> <span class="n">userService</span><span class="o">.</span><span class="n">login</span><span class="o">(</span><span class="n">user</span><span class="o">,</span> <span class="n">deviceType</span><span class="o">,</span> <span class="n">deviceID</span><span class="o">)</span>
+</span><span class='line'>          <span class="cm">/**</span>
+</span><span class='line'><span class="cm">          * create 的函数定义为： </span>
+</span><span class='line'><span class="cm">          * def create(loginInfo: LoginInfo)(implicit request: RequestHeader): Future[T]</span>
+</span><span class='line'><span class="cm">          * T 会被解析为 JWTEnv#A，且 type A = JWTAuthenticator，</span>
+</span><span class='line'><span class="cm">          * 因此 authenticator 的类型为 JWTAuthenticator，至于 JWT 下篇再叙，</span>
+</span><span class='line'><span class="cm">          * 同时给 authenticator 传入了自定义的 token 版本号</span>
+</span><span class='line'><span class="cm">          *</span>
+</span><span class='line'><span class="cm">          * init 的函数定义为：</span>
+</span><span class='line'><span class="cm">          * def init(authenticator: T)(implicit request: RequestHeader): Future[T#Value]</span>
+</span><span class='line'><span class="cm">          * 因此 token 类型为 JWTEnv#A#Value = JWTAuthenticator#Value = String，</span>
+</span><span class='line'><span class="cm">          * 即是 JWTAuthenticator 为该 LoginInfo(providerID: String, providerKey: String) + jwtVersion 生成的一个令牌，</span>
+</span><span class='line'><span class="cm">          * 其中只要有一项未通过服务器校验，token 即非法</span>
+</span><span class='line'><span class="cm">          **/</span>
+</span><span class='line'>          <span class="n">authenticator</span> <span class="k">&lt;-</span>
+</span><span class='line'>            <span class="n">silhouette</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">authenticatorService</span>
+</span><span class='line'>              <span class="o">.</span><span class="n">create</span><span class="o">(</span><span class="nc">LoginInfo</span><span class="o">(</span><span class="nc">ProviderKey</span><span class="o">.</span><span class="n">waylens</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">toString</span><span class="o">,</span> <span class="n">user</span><span class="o">.</span><span class="n">userID</span><span class="o">))</span>
+</span><span class='line'>              <span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">copy</span><span class="o">(</span><span class="n">id</span> <span class="k">=</span> <span class="n">loginID</span><span class="o">.</span><span class="n">toString</span><span class="o">,</span> <span class="n">customClaims</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="nc">JsObject</span><span class="o">(</span><span class="nc">Map</span><span class="o">(</span><span class="s">&quot;version&quot;</span><span class="o">-&gt;</span> <span class="nc">JsString</span><span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="n">jwtVersion</span><span class="o">))))))</span>
+</span><span class='line'>          <span class="n">token</span> <span class="k">&lt;-</span> <span class="n">silhouette</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">authenticatorService</span><span class="o">.</span><span class="n">init</span><span class="o">(</span><span class="n">authenticator</span><span class="o">)</span>
+</span><span class='line'>        <span class="o">}</span> <span class="k">yield</span> <span class="o">(</span><span class="n">token</span><span class="o">,</span> <span class="n">authenticator</span><span class="o">)).</span><span class="n">map</span> <span class="o">{</span>
+</span><span class='line'>          <span class="k">case</span> <span class="o">(</span><span class="n">token</span><span class="o">,</span> <span class="n">authenticator</span><span class="o">)</span> <span class="k">=&gt;</span>
+</span><span class='line'>            <span class="k">val</span> <span class="n">res</span> <span class="k">=</span> <span class="nc">SigninResponse</span><span class="o">(</span>
+</span><span class='line'>              <span class="n">user</span><span class="o">.</span><span class="n">identity</span><span class="o">.</span><span class="n">waylensUser</span><span class="o">,</span>
+</span><span class='line'>              <span class="n">token</span><span class="o">,</span>
+</span><span class='line'>              <span class="c1">// 同时返回 token 有效时长</span>
+</span><span class='line'>              <span class="n">authenticator</span><span class="o">.</span><span class="n">expirationDateTime</span><span class="o">.</span><span class="n">getMillis</span> <span class="o">/</span> <span class="mi">1000</span> <span class="o">*</span> <span class="mi">1000</span><span class="o">)</span>
+</span><span class='line'>            <span class="n">ok</span><span class="o">(</span><span class="n">res</span><span class="o">)</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>      <span class="k">case</span> <span class="nc">None</span> <span class="k">=&gt;</span> <span class="o">...</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 </div>
   

@@ -1,0 +1,455 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Scala | 一念天堂]]></title>
+  <link href="http://kdcc.github.io/blog/categories/scala/atom.xml" rel="self"/>
+  <link href="http://kdcc.github.io/"/>
+  <updated>2017-11-21T04:24:13+08:00</updated>
+  <id>http://kdcc.github.io/</id>
+  <author>
+    <name><![CDATA[kd]]></name>
+    <email><![CDATA[liangkaidong@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Playframework Silhouette 用户框架之基本配置和 Token 生成篇]]></title>
+    <link href="http://kdcc.github.io/blog/2017/11/21/silhouette1/"/>
+    <updated>2017-11-21T03:36:53+08:00</updated>
+    <id>http://kdcc.github.io/blog/2017/11/21/silhouette1</id>
+    <content type="html"><![CDATA[<ul>
+<li>添加依赖
+<figure class='code'><figcaption><span>build.sbt </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">libraryDependencies</span> <span class="o">++=</span> <span class="nc">Seq</span><span class="o">(&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="n">com</span><span class="o">.</span><span class="n">mohiva</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;</span> <span class="o">%%</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="n">play</span><span class="o">-</span><span class="n">silhouette</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;</span> <span class="o">%</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="mf">4.0</span><span class="o">.</span><span class="mi">0</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;,</span>
+</span><span class='line'><span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="n">com</span><span class="o">.</span><span class="n">mohiva</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;</span> <span class="o">%%</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="n">play</span><span class="o">-</span><span class="n">silhouette</span><span class="o">-</span><span class="n">password</span><span class="o">-</span><span class="n">bcrypt</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;</span> <span class="o">%</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="mf">4.0</span><span class="o">.</span><span class="mi">0</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;,</span>
+</span><span class='line'><span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="n">com</span><span class="o">.</span><span class="n">mohiva</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;</span> <span class="o">%%</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="n">play</span><span class="o">-</span><span class="n">silhouette</span><span class="o">-</span><span class="n">persistence</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;</span> <span class="o">%</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="mf">4.0</span><span class="o">.</span><span class="mi">0</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;)</span>
+</span></code></pre></td></tr></table></div></figure></li>
+<li><p>创建配置文件
+<figure class='code'><figcaption><span>silhouette.conf </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">silhouette</span> <span class="o">{</span>
+</span><span class='line'><span class="n">authenticator</span><span class="o">.</span><span class="n">headerName</span> <span class="k">=</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="n">X</span><span class="o">-</span><span class="nc">Auth</span><span class="o">-</span><span class="nc">Token</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;</span>
+</span><span class='line'><span class="n">authenticator</span><span class="o">.</span><span class="n">issuerClaim</span> <span class="k">=</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="n">waylens</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;</span>
+</span><span class='line'><span class="n">authenticator</span><span class="o">.</span><span class="n">encryptSubject</span> <span class="k">=</span> <span class="kc">false</span>
+</span><span class='line'><span class="n">authenticator</span><span class="o">.</span><span class="n">authenticatorExpiry</span> <span class="k">=</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="mi">365</span><span class="n">d</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;</span>
+</span><span class='line'><span class="n">authenticator</span><span class="o">.</span><span class="n">sharedSecret</span><span class="k">=</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="n">changeme</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="nc">Google</span> <span class="n">provider</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">google</span><span class="o">.</span><span class="n">authorizationURL</span><span class="k">=</span>
+</span><span class='line'><span class="n">google</span><span class="o">.</span><span class="n">accessTokenURL</span><span class="k">=</span>
+</span><span class='line'><span class="n">google</span><span class="o">.</span><span class="n">redirectURL</span><span class="k">=</span>
+</span><span class='line'><span class="n">google</span><span class="o">.</span><span class="n">clientID</span><span class="k">=</span>
+</span><span class='line'><span class="n">google</span><span class="o">.</span><span class="n">clientSecret</span><span class="k">=</span>
+</span><span class='line'><span class="n">google</span><span class="o">.</span><span class="n">scope</span><span class="k">=</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></p></li>
+<li>创建依赖配置类 SilhouetteModule
+<figure class='code'><figcaption><span>SilhouetteModule.scala </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">class</span> <span class="nc">EmptyIDGenerator</span> <span class="k">extends</span> <span class="nc">IDGenerator</span> <span class="o">{</span>
+</span><span class='line'><span class="k">def</span> <span class="n">generate</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="nc">Future</span><span class="o">.</span><span class="n">successful</span><span class="o">(&amp;</span><span class="n">ldquo</span><span class="o">;&amp;</span><span class="n">rdquo</span><span class="o">;)</span>
+</span><span class='line'><span class="o">}&lt;/</span><span class="n">li</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">ul</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;/&lt;</span><span class="n">em</span><span class="o">&gt;*</span>
+</span><span class='line'> <span class="o">*</span> <span class="n">用</span> <span class="nc">Guice</span> <span class="n">的</span> <span class="nc">AbstractModule</span> <span class="n">把</span> <span class="nc">Silhouette</span> <span class="n">的所有依赖装配起来</span>
+</span><span class='line'> <span class="o">*</span> <span class="n">注意后面的组件装配会依赖到前面的装配</span>
+</span><span class='line'> <span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;/&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">class</span> <span class="nc">SilhouetteModule</span> <span class="k">extends</span> <span class="nc">AbstractModule</span> <span class="k">with</span> <span class="nc">ScalaModule</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">/&lt;</span><span class="n">em</span><span class="o">&gt;*</span>
+</span><span class='line'>   <span class="o">*</span> <span class="nc">Configures</span> <span class="n">the</span> <span class="n">module</span><span class="o">.</span>
+</span><span class='line'>   <span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;/</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">configure</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">bind</span><span class="o">[</span><span class="kt">UserDAO</span><span class="o">].</span><span class="n">to</span><span class="o">[</span><span class="kt">UserDAOPsqlImpl</span><span class="o">]</span>
+</span><span class='line'>    <span class="n">bind</span><span class="o">[</span><span class="kt">CacheLayer</span><span class="o">].</span><span class="n">to</span><span class="o">[</span><span class="kt">PlayCacheLayer</span><span class="o">]</span>
+</span><span class='line'>    <span class="n">bind</span><span class="o">[</span><span class="kt">OAuth2StateProvider</span><span class="o">].</span><span class="n">to</span><span class="o">[</span><span class="kt">DummyStateProvider</span><span class="o">]</span>
+</span><span class='line'>    <span class="n">bind</span><span class="o">[</span><span class="kt">IDGenerator</span><span class="o">].</span><span class="n">to</span><span class="o">[</span><span class="kt">EmptyIDGenerator</span><span class="o">]</span>
+</span><span class='line'>    <span class="n">bind</span><span class="o">[</span><span class="kt">PasswordHasher</span><span class="o">].</span><span class="n">toInstance</span><span class="o">(</span><span class="k">new</span> <span class="nc">BCryptPasswordHasher</span><span class="o">)</span>
+</span><span class='line'>    <span class="n">bind</span><span class="o">[</span><span class="kt">EventBus</span><span class="o">].</span><span class="n">toInstance</span><span class="o">(</span><span class="nc">EventBus</span><span class="o">())</span>
+</span><span class='line'>    <span class="n">bind</span><span class="o">[</span><span class="kt">Clock</span><span class="o">].</span><span class="n">toInstance</span><span class="o">(</span><span class="nc">Clock</span><span class="o">())</span>
+</span><span class='line'>    <span class="n">bind</span><span class="o">[</span><span class="kt">Silhouette</span><span class="o">[</span><span class="kt">JWTEnv</span><span class="o">]].</span><span class="n">to</span><span class="o">[</span><span class="kt">SilhouetteProvider</span><span class="o">[</span><span class="kt">JWTEnv</span><span class="o">]]</span>
+</span><span class='line'>    <span class="n">bind</span><span class="o">[</span><span class="kt">SecuredErrorHandler</span><span class="o">].</span><span class="n">to</span><span class="o">[</span><span class="kt">JsonResponseErrorHandler</span><span class="o">]</span>
+</span><span class='line'>    <span class="n">bind</span><span class="o">[</span><span class="kt">AuthenticatorEncoder</span><span class="o">].</span><span class="n">to</span><span class="o">[</span><span class="kt">Base64AuthenticatorEncoder</span><span class="o">]</span>
+</span><span class='line'>  <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="nd">@Provides</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">provideHTTPLayer</span><span class="o">(</span><span class="n">client</span><span class="k">:</span> <span class="kt">WSClient</span><span class="o">)</span><span class="k">:</span> <span class="kt">HTTPLayer</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">PlayHTTPLayer</span><span class="o">(</span><span class="n">client</span><span class="o">)&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="nd">@Provides</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">provideAuthenticatorService</span><span class="o">(</span>
+</span><span class='line'>    <span class="n">cacheLayer</span><span class="k">:</span> <span class="kt">CacheLayer</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">authenticatorEncoder</span><span class="k">:</span> <span class="kt">AuthenticatorEncoder</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">idGenerator</span><span class="k">:</span> <span class="kt">IDGenerator</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">configuration</span><span class="k">:</span> <span class="kt">Configuration</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">clock</span><span class="k">:</span> <span class="kt">Clock</span><span class="o">)</span><span class="k">:</span> <span class="kt">AuthenticatorService</span><span class="o">[</span><span class="kt">JWTAuthenticator</span><span class="o">]</span> <span class="k">=</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">val</span> <span class="n">config</span> <span class="k">=</span> <span class="nc">JWTAuthenticatorSettings</span><span class="o">(</span>
+</span><span class='line'>  <span class="n">fieldName</span> <span class="k">=</span> <span class="n">configuration</span><span class="o">.</span><span class="n">underlying</span><span class="o">.</span><span class="n">as</span><span class="o">[</span><span class="kt">String</span><span class="o">](</span><span class="s">&quot;silhouette.authenticator.headerName&quot;</span><span class="o">),</span>
+</span><span class='line'>  <span class="n">issuerClaim</span> <span class="k">=</span> <span class="n">configuration</span><span class="o">.</span><span class="n">underlying</span><span class="o">.</span><span class="n">as</span><span class="o">[</span><span class="kt">String</span><span class="o">](</span><span class="s">&quot;silhouette.authenticator.issuerClaim&quot;</span><span class="o">),</span>
+</span><span class='line'>  <span class="n">authenticatorExpiry</span> <span class="k">=</span> <span class="n">configuration</span><span class="o">.</span><span class="n">underlying</span><span class="o">.</span><span class="n">as</span><span class="o">[</span><span class="kt">FiniteDuration</span><span class="o">](</span><span class="s">&quot;silhouette.authenticator.authenticatorExpiry&quot;</span><span class="o">),</span>
+</span><span class='line'>  <span class="n">sharedSecret</span> <span class="k">=</span> <span class="n">configuration</span><span class="o">.</span><span class="n">underlying</span><span class="o">.</span><span class="n">as</span><span class="o">[</span><span class="kt">String</span><span class="o">](</span><span class="s">&quot;silhouette.authenticator.sharedSecret&quot;</span><span class="o">))</span>
+</span><span class='line'><span class="k">new</span> <span class="nc">JWTAuthenticatorService</span><span class="o">(</span><span class="n">config</span><span class="o">,</span> <span class="nc">None</span><span class="o">,</span> <span class="n">authenticatorEncoder</span><span class="o">,</span> <span class="n">idGenerator</span><span class="o">,</span> <span class="n">clock</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="nd">@Provides</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">provideEnvironment</span><span class="o">(</span>
+</span><span class='line'>    <span class="n">userService</span><span class="k">:</span> <span class="kt">UserService</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">authenticatorService</span><span class="k">:</span> <span class="kt">AuthenticatorService</span><span class="o">[</span><span class="kt">JWTAuthenticator</span><span class="o">],</span>
+</span><span class='line'>    <span class="n">eventBus</span><span class="k">:</span> <span class="kt">EventBus</span><span class="o">)</span><span class="k">:</span> <span class="kt">Environment</span><span class="o">[</span><span class="kt">JWTEnv</span><span class="o">]</span> <span class="k">=</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="nc">Environment</span><span class="o">[</span><span class="kt">JWTEnv</span><span class="o">](</span>
+</span><span class='line'>  <span class="n">userService</span><span class="o">,</span>
+</span><span class='line'>  <span class="n">authenticatorService</span><span class="o">,</span>
+</span><span class='line'>  <span class="nc">Seq</span><span class="o">.</span><span class="n">empty</span><span class="o">,</span>
+</span><span class='line'>  <span class="n">eventBus</span>
+</span><span class='line'><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="nd">@Provides</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">provideAvatarService</span><span class="o">(</span><span class="n">httpLayer</span><span class="k">:</span> <span class="kt">HTTPLayer</span><span class="o">)</span><span class="k">:</span> <span class="kt">AvatarService</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">GravatarService</span><span class="o">(</span><span class="n">httpLayer</span><span class="o">)&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="nd">@Provides</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">provideGoogleProvider</span><span class="o">(</span>
+</span><span class='line'>    <span class="n">httpLayer</span><span class="k">:</span> <span class="kt">HTTPLayer</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">stateProvider</span><span class="k">:</span> <span class="kt">OAuth2StateProvider</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">configuration</span><span class="k">:</span> <span class="kt">Configuration</span><span class="o">)</span><span class="k">:</span> <span class="kt">GoogleProvider</span> <span class="o">=</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">new</span> <span class="nc">GoogleProvider</span><span class="o">(</span><span class="n">httpLayer</span><span class="o">,</span> <span class="n">stateProvider</span><span class="o">,</span> <span class="n">configuration</span><span class="o">.</span><span class="n">underlying</span><span class="o">.</span><span class="n">as</span><span class="o">[</span><span class="kt">OAuth2Settings</span><span class="o">](</span><span class="s">&quot;silhouette.google&quot;</span><span class="o">))</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+* 在配置中启用 SilhouetteModule 模块
+<figure class='code'><figcaption><span>application.conf </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">play</span><span class="o">.</span><span class="n">modules</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">enabled</span> <span class="o">+=</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="n">modules</span><span class="o">.</span><span class="nc">SilhouetteModule</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">&amp;</span><span class="n">hellip</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+* 注册、登录时生成 (新)token
+<figure class='code'><figcaption><span>依赖代码 </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">case</span> <span class="k">class</span> <span class="nc">HornIdentity</span><span class="o">(</span>
+</span><span class='line'>    <span class="n">userID</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">email</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">String</span><span class="o">],</span>
+</span><span class='line'>    <span class="n">userName</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">displayName</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">avatarUrl</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">isVerified</span><span class="k">:</span> <span class="kt">Boolean</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">jwtVersion</span><span class="k">:</span> <span class="kt">String</span><span class="o">)&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">trait</span> <span class="nc">JWTEnv</span> <span class="k">extends</span> <span class="nc">Env</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">type</span> <span class="kt">I</span> <span class="o">=</span> <span class="nc">HornIdentity</span>
+</span><span class='line'>  <span class="k">type</span> <span class="kt">A</span> <span class="o">=</span> <span class="nc">JWTAuthenticator</span>
+</span><span class='line'><span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">trait</span> <span class="nc">ExpirableAuthenticator</span> <span class="k">extends</span> <span class="nc">Authenticator</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">val</span> <span class="n">lastUsedDateTime</span><span class="k">:</span> <span class="kt">DateTime&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">val</span> <span class="n">expirationDateTime</span><span class="k">:</span> <span class="kt">DateTime&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">val</span> <span class="n">idleTimeout</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">FiniteDuration</span><span class="o">]&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">override</span> <span class="k">def</span> <span class="n">isValid</span> <span class="k">=</span> <span class="o">!</span><span class="n">isExpired</span> <span class="o">&amp;</span><span class="n">amp</span><span class="o">;&amp;</span><span class="n">amp</span><span class="o">;</span> <span class="o">!</span><span class="n">isTimedOut</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">def</span> <span class="n">isExpired</span> <span class="k">=</span> <span class="n">expirationDateTime</span><span class="o">.</span><span class="n">isBeforeNow</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">def</span> <span class="n">isTimedOut</span> <span class="k">=</span> <span class="n">idleTimeout</span><span class="o">.</span><span class="n">isDefined</span> <span class="o">&amp;</span><span class="n">amp</span><span class="o">;&amp;</span><span class="n">amp</span><span class="o">;</span> <span class="o">(</span><span class="n">lastUsedDateTime</span> <span class="o">+</span> <span class="n">idleTimeout</span><span class="o">.</span><span class="n">get</span><span class="o">).</span><span class="n">isBeforeNow</span>
+</span><span class='line'><span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">case</span> <span class="k">class</span> <span class="nc">LoginInfo</span><span class="o">(</span><span class="n">providerID</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">providerKey</span><span class="k">:</span> <span class="kt">String</span><span class="o">)&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">case</span> <span class="k">class</span> <span class="nc">JWTAuthenticator</span><span class="o">(</span>
+</span><span class='line'>  <span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
+</span><span class='line'>  <span class="n">loginInfo</span><span class="k">:</span> <span class="kt">LoginInfo</span><span class="o">,</span>
+</span><span class='line'>  <span class="n">lastUsedDateTime</span><span class="k">:</span> <span class="kt">DateTime</span><span class="o">,</span>
+</span><span class='line'>  <span class="n">expirationDateTime</span><span class="k">:</span> <span class="kt">DateTime</span><span class="o">,</span>
+</span><span class='line'>  <span class="n">idleTimeout</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">FiniteDuration</span><span class="o">],</span>
+</span><span class='line'>  <span class="n">customClaims</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">JsObject</span><span class="o">]</span> <span class="k">=</span> <span class="nc">None</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">extends</span> <span class="nc">StorableAuthenticator</span> <span class="k">with</span> <span class="nc">ExpirableAuthenticator</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">/&lt;</span><span class="n">em</span><span class="o">&gt;*</span>
+</span><span class='line'>   <span class="o">*</span> <span class="nc">The</span> <span class="nc">Type</span> <span class="n">of</span> <span class="n">the</span> <span class="n">generated</span> <span class="n">value</span> <span class="n">an</span> <span class="n">authenticator</span> <span class="n">will</span> <span class="n">be</span> <span class="n">serialized</span> <span class="n">to</span><span class="o">.</span>
+</span><span class='line'>   <span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;/</span>
+</span><span class='line'>  <span class="k">override</span> <span class="k">type</span> <span class="kt">Value</span> <span class="o">=</span> <span class="nc">String</span>
+</span><span class='line'><span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">trait</span> <span class="nc">AuthenticatorService</span><span class="o">[</span><span class="kt">T</span> <span class="kt">&amp;lt</span><span class="err">;</span><span class="kt">:</span> <span class="kt">Authenticator</span><span class="o">]</span> <span class="nc">extends</span> <span class="nc">ExecutionContextProvider</span> <span class="o">{</span>
+</span><span class='line'>  <span class="o">/&lt;</span><span class="n">em</span><span class="o">&gt;*</span>
+</span><span class='line'>   <span class="o">*</span> <span class="nc">Creates</span> <span class="n">a</span> <span class="k">new</span> <span class="n">authenticator</span> <span class="k">for</span> <span class="n">the</span> <span class="n">specified</span> <span class="n">login</span> <span class="n">info</span><span class="o">.</span>
+</span><span class='line'>   <span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;/</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">create</span><span class="o">(</span><span class="n">loginInfo</span><span class="k">:</span> <span class="kt">LoginInfo</span><span class="o">)(</span><span class="k">implicit</span> <span class="n">request</span><span class="k">:</span> <span class="kt">RequestHeader</span><span class="o">)</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">T</span><span class="o">]&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">/&lt;</span><span class="n">em</span><span class="o">&gt;*</span>
+</span><span class='line'>   <span class="o">*</span> <span class="nc">Retrieves</span> <span class="n">the</span> <span class="n">authenticator</span> <span class="n">from</span> <span class="n">request</span><span class="o">.</span>
+</span><span class='line'>   <span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;/</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">retrieve</span><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;implicit%20request:%20ExtractableRequest[B]&quot;</span><span class="o">&gt;</span><span class="n">B</span><span class="o">&lt;/</span><span class="n">a</span><span class="k">&gt;:</span> <span class="nc">Future</span><span class="o">[</span><span class="kt">Option</span><span class="o">[</span><span class="kt">T</span><span class="o">]]&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">/&lt;</span><span class="n">em</span><span class="o">&gt;*</span>
+</span><span class='line'>   <span class="o">*</span> <span class="nc">Initializes</span> <span class="n">an</span> <span class="n">authenticator</span> <span class="n">and</span> <span class="n">instead</span> <span class="n">of</span> <span class="n">embedding</span> <span class="n">into</span> <span class="n">the</span> <span class="n">the</span> <span class="n">request</span> <span class="n">or</span> <span class="n">result</span><span class="o">,</span> <span class="n">it</span> <span class="n">returns</span>
+</span><span class='line'>   <span class="o">*</span> <span class="n">the</span> <span class="n">serialized</span> <span class="n">value</span><span class="o">.</span>
+</span><span class='line'>   <span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;/</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">init</span><span class="o">(</span><span class="n">authenticator</span><span class="k">:</span> <span class="kt">T</span><span class="o">)(</span><span class="k">implicit</span> <span class="n">request</span><span class="k">:</span> <span class="kt">RequestHeader</span><span class="o">)</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">T</span><span class="k">#</span><span class="kt">Value</span><span class="o">]</span>
+</span><span class='line'>  <span class="o">&amp;</span><span class="n">hellip</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></p>
+
+<p><figure class='code'><figcaption><span>主代码 </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">class</span> <span class="nc">UserController</span> <span class="nd">@Inject</span><span class="o">()(</span><span class="n">userService</span><span class="k">:</span> <span class="kt">UserService</span><span class="o">,</span> <span class="n">silhouette</span><span class="k">:</span> <span class="kt">Silhouette</span><span class="o">[</span><span class="kt">JWTEnv</span><span class="o">])</span> <span class="k">extends</span> <span class="nc">Controller</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">signin</span> <span class="k">=</span> <span class="nc">Action</span><span class="o">.</span><span class="n">async</span><span class="o">(</span><span class="n">parse</span><span class="o">.</span><span class="n">json</span><span class="o">)</span> <span class="o">{</span> <span class="k">implicit</span> <span class="n">request</span> <span class="k">=&gt;</span>
+</span><span class='line'>    <span class="o">&amp;</span><span class="n">hellip</span><span class="o">;</span>
+</span><span class='line'>    <span class="c1">// 按某种加密算法校验邮箱密码是否正确，是的话返回用户信息</span>
+</span><span class='line'>    <span class="n">userService</span><span class="o">.</span><span class="n">authenticate</span><span class="o">(</span><span class="n">email</span><span class="o">,</span> <span class="n">password</span><span class="o">).</span><span class="n">map</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">case</span> <span class="nc">Some</span><span class="o">(</span><span class="n">user</span><span class="o">)</span> <span class="k">=&gt;</span>
+</span><span class='line'>        <span class="o">(</span><span class="k">for</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">loginID</span> <span class="k">&lt;-</span> <span class="n">userService</span><span class="o">.</span><span class="n">login</span><span class="o">(</span><span class="n">user</span><span class="o">,</span> <span class="n">deviceType</span><span class="o">,</span> <span class="n">deviceID</span><span class="o">)</span>
+</span><span class='line'>          <span class="cm">/**</span>
+</span><span class='line'><span class="cm">          * create 的函数定义为：</span>
+</span><span class='line'><span class="cm">          * def create(loginInfo: LoginInfo)(implicit request: RequestHeader): Future[T]</span>
+</span><span class='line'><span class="cm">          * T 会被解析为 JWTEnv#A，且 type A = JWTAuthenticator，</span>
+</span><span class='line'><span class="cm">          * 因此 authenticator 的类型为 JWTAuthenticator，至于 JWT 下篇再叙，</span>
+</span><span class='line'><span class="cm">          * 同时给 authenticator 传入了自定义的 token 版本号</span>
+</span><span class='line'><span class="cm">          *</span>
+</span><span class='line'><span class="cm">          * init 的函数定义为：</span>
+</span><span class='line'><span class="cm">          * def init(authenticator: T)(implicit request: RequestHeader): Future[T#Value]</span>
+</span><span class='line'><span class="cm">          * 因此 token 类型为 JWTEnv#A#Value = JWTAuthenticator#Value = String，</span>
+</span><span class='line'><span class="cm">          * 即是 JWTAuthenticator 为该 LoginInfo(providerID: String, providerKey: String) + jwtVersion 生成的一个令牌，</span>
+</span><span class='line'><span class="cm">          * 其中只要有一项未通过服务器校验，token 即非法</span>
+</span><span class='line'><span class="cm">          **/</span>
+</span><span class='line'>          <span class="n">authenticator</span> <span class="k">&lt;-</span>
+</span><span class='line'>            <span class="n">silhouette</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">authenticatorService</span>
+</span><span class='line'>              <span class="o">.</span><span class="n">create</span><span class="o">(</span><span class="nc">LoginInfo</span><span class="o">(</span><span class="nc">ProviderKey</span><span class="o">.</span><span class="n">waylens</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">toString</span><span class="o">,</span> <span class="n">user</span><span class="o">.</span><span class="n">userID</span><span class="o">))</span>
+</span><span class='line'>              <span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">copy</span><span class="o">(</span><span class="n">id</span> <span class="k">=</span> <span class="n">loginID</span><span class="o">.</span><span class="n">toString</span><span class="o">,</span> <span class="n">customClaims</span> <span class="k">=</span> <span class="nc">Some</span><span class="o">(</span><span class="nc">JsObject</span><span class="o">(</span><span class="nc">Map</span><span class="o">(</span><span class="s">&quot;version&quot;</span><span class="o">-&gt;</span> <span class="nc">JsString</span><span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="n">jwtVersion</span><span class="o">))))))</span>
+</span><span class='line'>          <span class="n">token</span> <span class="k">&lt;-</span> <span class="n">silhouette</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">authenticatorService</span><span class="o">.</span><span class="n">init</span><span class="o">(</span><span class="n">authenticator</span><span class="o">)</span>
+</span><span class='line'>        <span class="o">}</span> <span class="k">yield</span> <span class="o">(</span><span class="n">token</span><span class="o">,</span> <span class="n">authenticator</span><span class="o">)).</span><span class="n">map</span> <span class="o">{</span>
+</span><span class='line'>          <span class="k">case</span> <span class="o">(</span><span class="n">token</span><span class="o">,</span> <span class="n">authenticator</span><span class="o">)</span> <span class="k">=&gt;</span>
+</span><span class='line'>            <span class="k">val</span> <span class="n">res</span> <span class="k">=</span> <span class="nc">SigninResponse</span><span class="o">(</span>
+</span><span class='line'>              <span class="n">user</span><span class="o">.</span><span class="n">identity</span><span class="o">.</span><span class="n">waylensUser</span><span class="o">,</span>
+</span><span class='line'>              <span class="n">token</span><span class="o">,</span>
+</span><span class='line'>              <span class="c1">// 同时返回 token 有效时长</span>
+</span><span class='line'>              <span class="n">authenticator</span><span class="o">.</span><span class="n">expirationDateTime</span><span class="o">.</span><span class="n">getMillis</span> <span class="o">/</span> <span class="mi">1000</span> <span class="o">*</span> <span class="mi">1000</span><span class="o">)</span>
+</span><span class='line'>            <span class="n">ok</span><span class="o">(</span><span class="n">res</span><span class="o">)</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>      <span class="k">case</span> <span class="nc">None</span> <span class="k">=&gt;</span> <span class="o">&amp;</span><span class="n">hellip</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></p>
+]]></content>
+  </entry>
+  
+</feed>
