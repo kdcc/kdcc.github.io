@@ -4,7 +4,7 @@
   <title><![CDATA[一念天堂]]></title>
   <link href="http://kdcc.github.io/atom.xml" rel="self"/>
   <link href="http://kdcc.github.io/"/>
-  <updated>2017-11-21T04:24:13+08:00</updated>
+  <updated>2017-11-21T16:47:52+08:00</updated>
   <id>http://kdcc.github.io/</id>
   <author>
     <name><![CDATA[kd]]></name>
@@ -31,6 +31,9 @@
 </span><span class='line'>  <span class="s">&quot;com.mohiva&quot;</span> <span class="o">%%</span> <span class="s">&quot;play-silhouette-password-bcrypt&quot;</span> <span class="o">%</span> <span class="s">&quot;4.0.0&quot;</span><span class="o">,</span>
 </span><span class='line'>  <span class="s">&quot;com.mohiva&quot;</span> <span class="o">%%</span> <span class="s">&quot;play-silhouette-persistence&quot;</span> <span class="o">%</span> <span class="s">&quot;4.0.0&quot;</span><span class="o">)</span>
 </span></code></pre></td></tr></table></div></figure>
+
+
+<!-- more -->
 
 
 <ul>
