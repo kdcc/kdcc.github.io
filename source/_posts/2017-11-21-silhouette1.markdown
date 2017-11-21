@@ -3,7 +3,7 @@ layout: post
 title: "Playframework Silhouette 用户框架之基本配置和 Token 生成篇"
 date: 2017-11-21 03:36:53 +0800
 comments: true
-categories: Scala
+categories: scala framework silhouette
 ---
 
 * 添加依赖
@@ -12,6 +12,7 @@ categories: Scala
   "com.mohiva" %% "play-silhouette-password-bcrypt" % "4.0.0",
   "com.mohiva" %% "play-silhouette-persistence" % "4.0.0")
 {% endcodeblock %}
+<!-- more -->
 * 创建配置文件
 {% codeblock silhouette.conf lang:scala %}
 silhouette {
