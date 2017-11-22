@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Playframework Silhouette 用户框架之基本配置和 Token 生成篇"
+title: "Playframework Silhouette 用户框架之基本配置和 Json Web Token 生成篇"
 date: 2017-11-21 03:36:53 +0800
 comments: true
 categories: scala framework silhouette
@@ -10,13 +10,15 @@ categories: scala framework silhouette
 {% codeblock build.sbt lang:scala %}
   libraryDependencies ++= Seq("com.mohiva" %% "play-silhouette" % "4.0.0",
   "com.mohiva" %% "play-silhouette-password-bcrypt" % "4.0.0",
-  "com.mohiva" %% "play-silhouette-persistence" % "4.0.0")
+  "com.mohiva" %% "play-silhouette-persistence" % "4.0.0" // 如果想让 token stateful 就需引入
+  )
 {% endcodeblock %}
 <!-- more -->
 * 创建配置文件
 {% codeblock silhouette.conf lang:scala %}
 silhouette {
-  authenticator.headerName = "X-Auth-Token"
+  // 定义 JWT 的 header 属性
+  authenticator.headerName = "X-Auth-Token" // 在 http 头中的字段名
   authenticator.issuerClaim = "waylens"
   authenticator.encryptSubject = false
   authenticator.authenticatorExpiry = "365d"
@@ -106,7 +108,32 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
   }
 }
 {% endcodeblock %}
-* 在配置中启用 SilhouetteModule 模块
+  核心：bind[_Silhouette_[JWTEnv]].to[_SilhouetteProvider_[JWTEnv]]
+{% codeblock SilhouetteProvider 在库中定义 lang:scala %}
+class SilhouetteProvider[E <: Env] @Inject() (
+  val env: Environment[E],
+  val securedAction: SecuredAction,
+  val unsecuredAction: UnsecuredAction,
+  val userAwareAction: UserAwareAction)
+  extends Silhouette[E]
+
+// 配置类提供了其所需要的 Environment
+@Provides
+def provideEnvironment(
+  userService: UserService,
+  authenticatorService: AuthenticatorService[JWTAuthenticator],
+  eventBus: EventBus): Environment[JWTEnv] = {
+
+  Environment[JWTEnv](
+    userService,
+    authenticatorService,
+    Seq.empty,
+    eventBus
+  )
+}
+{% endcodeblock %}
+  
+* 在 play 配置文件中启用 SilhouetteModule 模块
 {% codeblock application.conf lang:scala %}
 play.modules {
   enabled += "modules.SilhouetteModule"
@@ -114,7 +141,7 @@ play.modules {
 }
 {% endcodeblock %}
 * 注册、登录时生成 (新)token
-{% codeblock 依赖代码 lang:scala %}
+{% codeblock 依赖的库源码 lang:scala %}
 case class HornIdentity(
     userID: String,
     email: Option[String],
@@ -194,7 +221,7 @@ class UserController @Inject()(userService: UserService, silhouette: Silhouette[
           * create 的函数定义为： 
           * def create(loginInfo: LoginInfo)(implicit request: RequestHeader): Future[T]
           * T 会被解析为 JWTEnv#A，且 type A = JWTAuthenticator，
-          * 因此 authenticator 的类型为 JWTAuthenticator，至于 JWT 下篇再叙，
+          * 因此 authenticator 的类型为 JWTAuthenticator，
           * 同时给 authenticator 传入了自定义的 token 版本号
           *
           * init 的函数定义为：
@@ -221,4 +248,24 @@ class UserController @Inject()(userService: UserService, silhouette: Silhouette[
     }
   }
 }
+{% endcodeblock %}
+
+* 核心小结
+
+  1. 后台随机生成 userID ，组装成 **LoginInfo**
+
+  * **AuthenticatorService.create**(loginInfo) 得到 **JWTAuthenticator**， 接着可以向它塞进 _JWTVersion_ 等客制化校验信息
+
+  * **AuthenticatorService.init**(jwtAuthenticator) 得到 token，这里会按 JWTAuthenticator 的类型对 jwtAuthenticator 所携带信息（LoginInfo, JWTVersion 等）进行加密得到一个 JWT（**header.payload.secret**）
+
+  * userID -> LoginInfo -> JWTAuthenticator -> token
+
+{% codeblock 让我再看你一遍 JWTAuthenticator lang:scala %}
+JWTAuthenticator(
+  id: String,
+  loginInfo: LoginInfo,
+  lastUsedDateTime: DateTime,
+  expirationDateTime: DateTime,
+  idleTimeout: Option[FiniteDuration],
+  customClaims: Option[JsObject] = None)
 {% endcodeblock %}
