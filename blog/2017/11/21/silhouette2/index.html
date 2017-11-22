@@ -1,0 +1,355 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Playframework Silhouette 用户框架之权限校验篇 - 一念天堂</title>
+  <meta name="author" content="kd">
+
+  
+  <meta name="description" content="上篇 说到了客户发送 用户名+密码 请求 注册/登录 后，后台先通过密码校验，再通过 AuthenticatorService 来创建 Authenticator 进而生成 token，本篇就来说说客户拿到该 token 后如何敲进后台的大门。 探秘 SecuredAction &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://kdcc.github.io/blog/2017/11/21/silhouette2/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="一念天堂" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">一念天堂</a></h1>
+  
+    <h2>“拥有的都是侥幸，失去的都是人生”</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="kdcc.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/about">About</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Playframework Silhouette 用户框架之权限校验篇</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-11-21T17:31:00+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>21</span><span class='date-suffix'>st</span>, <span class='date-year'>2017</span></span> <span class='time'>5:31 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><a href="http://kdleong.com/blog/2017/11/21/silhouette1/">上篇</a> 说到了客户发送 <code>用户名+密码</code> 请求 <code>注册/登录</code> 后，后台先通过密码校验，再通过 AuthenticatorService 来创建 Authenticator 进而生成 <code>token</code>，本篇就来说说客户拿到该 <code>token</code> 后如何敲进后台的大门。</p>
+
+<!-- more -->
+
+
+<ul>
+<li>探秘 SecuredAction</li>
+</ul>
+
+
+<figure class='code'><figcaption><span>SecuredAction 做了啥 </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="c1">// 你没看错，在 controller 中校验就是这么简洁</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">Application</span><span class="o">(</span><span class="n">silhouette</span><span class="k">:</span> <span class="kt">Silhouette</span><span class="o">[</span><span class="kt">DefaultEnv</span><span class="o">])</span> <span class="k">extends</span> <span class="nc">Controller</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">myAction</span> <span class="k">=</span> <span class="n">silhouette</span><span class="o">.</span><span class="nc">SecuredAction</span><span class="o">()</span> <span class="o">{</span> <span class="k">implicit</span> <span class="n">request</span> <span class="k">=&gt;</span>
+</span><span class='line'>    <span class="c1">// do something here</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 回顾一下 Environment 用了我写的 UserService 进行装配</span>
+</span><span class='line'><span class="nd">@Provides</span>
+</span><span class='line'><span class="k">def</span> <span class="n">provideEnvironment</span><span class="o">(</span>
+</span><span class='line'>  <span class="n">userService</span><span class="k">:</span> <span class="kt">UserService</span><span class="o">,</span>
+</span><span class='line'>  <span class="n">authenticatorService</span><span class="k">:</span> <span class="kt">AuthenticatorService</span><span class="o">[</span><span class="kt">JWTAuthenticator</span><span class="o">],</span>
+</span><span class='line'>  <span class="n">eventBus</span><span class="k">:</span> <span class="kt">EventBus</span><span class="o">)</span><span class="k">:</span> <span class="kt">Environment</span><span class="o">[</span><span class="kt">JWTEnv</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nc">Environment</span><span class="o">[</span><span class="kt">JWTEnv</span><span class="o">](</span>
+</span><span class='line'>    <span class="n">userService</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">authenticatorService</span><span class="o">,</span>
+</span><span class='line'>    <span class="nc">Seq</span><span class="o">.</span><span class="n">empty</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">eventBus</span>
+</span><span class='line'>  <span class="o">)</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// UserService 继承 IdentityService 并实现了 retrieve</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">UserService</span> <span class="nd">@Inject</span><span class="o">()(</span><span class="n">userDAO</span><span class="k">:</span> <span class="kt">UserDAO</span><span class="o">)</span> <span class="k">extends</span>
+</span><span class='line'>  <span class="nc">IdentityService</span><span class="o">[</span><span class="kt">MyIdentity</span><span class="o">]</span> <span class="k">with</span> <span class="nc">Logger</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="cm">/**</span>
+</span><span class='line'><span class="cm">    * Retrieves a user that matches the specified login info.</span>
+</span><span class='line'><span class="cm">    */</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">retrieve</span><span class="o">(</span><span class="n">loginInfo</span><span class="k">:</span> <span class="kt">LoginInfo</span><span class="o">)</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">Option</span><span class="o">[</span><span class="kt">MyIdentity</span><span class="o">]]</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">userID</span> <span class="k">=</span> <span class="n">loginInfo</span><span class="o">.</span><span class="n">providerKey</span>
+</span><span class='line'>    <span class="n">userDAO</span><span class="o">.</span><span class="n">getUserInfo</span><span class="o">(</span><span class="n">userID</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>  这样 SecuredAction 在背后做的事情就是：</p>
+
+<blockquote><ol>
+<li>解析 request header ，按预先 JWT 协议读取 token 并解析出 LoginInfo</li>
+<li>调用 UserService.retrieve 去获取用户信息(identity)</li>
+<li>如果拿到有效信息，将用户信息塞进 request.identity 中传给后面的代码，否则跳过后面代码（至于到哪去，下篇详解）</li>
+</ol>
+</blockquote>
+
+<ul>
+<li>通过自定义 <code>授权校验类</code> 进行 <code>客制化校验</code></li>
+</ul>
+
+
+<figure class='code'><figcaption><span>SecuredAction 做了啥 </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">trait</span> <span class="nc">Authorization</span><span class="o">[</span><span class="kt">I</span> <span class="k">&lt;:</span> <span class="kt">Identity</span>, <span class="kt">A</span> <span class="k">&lt;:</span> <span class="kt">Authenticator</span><span class="o">]</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="cm">/**</span>
+</span><span class='line'><span class="cm">   * Checks whether the user is authorized to execute an endpoint or not.</span>
+</span><span class='line'><span class="cm">   *</span>
+</span><span class='line'><span class="cm">   * @param identity The current identity instance.</span>
+</span><span class='line'><span class="cm">   * @param authenticator The current authenticator instance.</span>
+</span><span class='line'><span class="cm">   * @param request The current request.</span>
+</span><span class='line'><span class="cm">   * @tparam B The type of the request body.</span>
+</span><span class='line'><span class="cm">   * @return True if the user is authorized, false otherwise.</span>
+</span><span class='line'><span class="cm">   */</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">isAuthorized</span><span class="o">[</span><span class="kt">B</span><span class="o">](</span><span class="n">identity</span><span class="k">:</span> <span class="kt">I</span><span class="o">,</span> <span class="n">authenticator</span><span class="k">:</span> <span class="kt">A</span><span class="o">)(</span>
+</span><span class='line'>    <span class="k">implicit</span> <span class="n">request</span><span class="k">:</span> <span class="kt">Request</span><span class="o">[</span><span class="kt">B</span><span class="o">])</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">Boolean</span><span class="o">]</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">case</span> <span class="k">class</span> <span class="nc">WithProvider</span><span class="o">(</span><span class="n">provider</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">Authorization</span><span class="o">[</span><span class="kt">User</span>, <span class="kt">CookieAuthenticator</span><span class="o">]</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">isAuthorized</span><span class="o">[</span><span class="kt">B</span><span class="o">](</span><span class="n">user</span><span class="k">:</span> <span class="kt">User</span><span class="o">,</span> <span class="n">authenticator</span><span class="k">:</span> <span class="kt">CookieAuthenticator</span><span class="o">)(</span>
+</span><span class='line'>    <span class="k">implicit</span> <span class="n">request</span><span class="k">:</span> <span class="kt">Request</span><span class="o">[</span><span class="kt">B</span><span class="o">])</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nc">Future</span><span class="o">.</span><span class="n">successful</span><span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="n">loginInfo</span><span class="o">.</span><span class="n">providerID</span> <span class="o">==</span> <span class="n">provider</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>核心小结
+
+<ol>
+<li>UserService <em>-Environment[JWTEnv]-></em> Silhouette</li>
+<li>request header <em>-Silhouette.SecuredAction-></em> JWT -> LoginInfo</li>
+<li>LoginInfo <em>-UserService.retrieve-></em> Option[Identity] <em>-Silhouette.SecuredAction-></em> request -> do something</li>
+</ol>
+</li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">kd</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2017-11-21T17:31:00+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>21</span><span class='date-suffix'>st</span>, <span class='date-year'>2017</span></span> <span class='time'>5:31 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/framework/'>framework</a>, <a class='category' href='/blog/categories/scala/'>scala</a>, <a class='category' href='/blog/categories/silhouette/'>silhouette</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+
+  <!-- UY BEGIN -->
+  <div id="uyan_frame"></div>
+  <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2149422"></script>
+  <!-- UY END -->
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2017/11/21/silhouette1/" title="Previous Post: Playframework Silhouette 用户框架之基本配置和 Json Web Token 生成篇">&laquo; Playframework Silhouette 用户框架之基本配置和 Json Web Token 生成篇</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2017/11/21/silhouette2/">Playframework Silhouette 用户框架之权限校验篇</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/11/21/silhouette1/">Playframework Silhouette 用户框架之基本配置和 Json Web Token 生成篇</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2016/05/28/test/">如文</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+<section class="well">
+  <h1>Categories</h1>
+  <ul id="categories" class="nav nav-list">
+    <li class='category'><a href='/blog/categories/framework/'>framework (2)</a></li>
+<li class='category'><a href='/blog/categories/scala/'>scala (2)</a></li>
+<li class='category'><a href='/blog/categories/silhouette/'>silhouette (2)</a></li>
+
+  </ul>
+</section>
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2017 - kd -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+  <script type="text/javascript" src="http://arrow.scrolltotop.com/arrow19.js"></script>
+<noscript>Not seeing a <a href="http://www.scrolltotop.com/">Scroll to Top Button</a>? Go to our FAQ page for more info.</noscript>
+</body>
+</html>

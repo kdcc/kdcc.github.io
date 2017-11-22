@@ -38,7 +38,7 @@
   <header role="banner"><hgroup>
   <h1><a href="/">一念天堂</a></h1>
   
-    <h2>“我拥有的都是侥幸啊,我失去的都是人生”</h2>
+    <h2>“拥有的都是侥幸，失去的都是人生”</h2>
   
 </hgroup>
 
@@ -72,7 +72,41 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2017/11/21/silhouette1/">Playframework Silhouette 用户框架之基本配置和 Token 生成篇</a></h1>
+      <h1 class="entry-title"><a href="/blog/2017/11/21/silhouette2/">Playframework Silhouette 用户框架之权限校验篇</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-11-21T17:31:00+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>21</span><span class='date-suffix'>st</span>, <span class='date-year'>2017</span></span> <span class='time'>5:31 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="http://kdleong.com/blog/2017/11/21/silhouette1/">上篇</a> 说到了客户发送 <code>用户名+密码</code> 请求 <code>注册/登录</code> 后，后台先通过密码校验，再通过 AuthenticatorService 来创建 Authenticator 进而生成 <code>token</code>，本篇就来说说客户拿到该 <code>token</code> 后如何敲进后台的大门。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2017/11/21/silhouette2/">Full text &dharr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2017/11/21/silhouette1/">Playframework Silhouette 用户框架之基本配置和 Json Web Token 生成篇</a></h1>
     
     
       <p class="meta">
@@ -97,9 +131,11 @@
 <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
+<span class='line-number'>4</span>
 </pre></td><td class='code'><pre><code class='scala'><span class='line'>  <span class="n">libraryDependencies</span> <span class="o">++=</span> <span class="nc">Seq</span><span class="o">(</span><span class="s">&quot;com.mohiva&quot;</span> <span class="o">%%</span> <span class="s">&quot;play-silhouette&quot;</span> <span class="o">%</span> <span class="s">&quot;4.0.0&quot;</span><span class="o">,</span>
 </span><span class='line'>  <span class="s">&quot;com.mohiva&quot;</span> <span class="o">%%</span> <span class="s">&quot;play-silhouette-password-bcrypt&quot;</span> <span class="o">%</span> <span class="s">&quot;4.0.0&quot;</span><span class="o">,</span>
-</span><span class='line'>  <span class="s">&quot;com.mohiva&quot;</span> <span class="o">%%</span> <span class="s">&quot;play-silhouette-persistence&quot;</span> <span class="o">%</span> <span class="s">&quot;4.0.0&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="s">&quot;com.mohiva&quot;</span> <span class="o">%%</span> <span class="s">&quot;play-silhouette-persistence&quot;</span> <span class="o">%</span> <span class="s">&quot;4.0.0&quot;</span> <span class="c1">// 如果想让 token stateful 就需引入</span>
+</span><span class='line'>  <span class="o">)</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -156,7 +192,11 @@
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2017/11/21/silhouette1/">Playframework Silhouette 用户框架之基本配置和 Token 生成篇</a>
+        <a href="/blog/2017/11/21/silhouette2/">Playframework Silhouette 用户框架之权限校验篇</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/11/21/silhouette1/">Playframework Silhouette 用户框架之基本配置和 Json Web Token 生成篇</a>
       </li>
     
       <li class="post">
@@ -170,9 +210,9 @@
 <section class="well">
   <h1>Categories</h1>
   <ul id="categories" class="nav nav-list">
-    <li class='category'><a href='/blog/categories/framework/'>framework (1)</a></li>
-<li class='category'><a href='/blog/categories/scala/'>scala (1)</a></li>
-<li class='category'><a href='/blog/categories/silhouette/'>silhouette (1)</a></li>
+    <li class='category'><a href='/blog/categories/framework/'>framework (2)</a></li>
+<li class='category'><a href='/blog/categories/scala/'>scala (2)</a></li>
+<li class='category'><a href='/blog/categories/silhouette/'>silhouette (2)</a></li>
 
   </ul>
 </section>

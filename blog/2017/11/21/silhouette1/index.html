@@ -5,13 +5,14 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Playframework Silhouette 用户框架之基本配置和 Token 生成篇 - 一念天堂</title>
+  <title>Playframework Silhouette 用户框架之基本配置和 Json Web Token 生成篇 - 一念天堂</title>
   <meta name="author" content="kd">
 
   
   <meta name="description" content="添加依赖 build.sbt 1
 2
-3 libraryDependencies ++= Seq(&quot;com.mohiva&quot; %% &quot;play-silhouette&quot; % &quot;4.0.0&quot;, &quot;com.mohiva&quot &hellip;">
+3
+4 libraryDependencies ++= Seq(&quot;com.mohiva&quot; %% &quot;play-silhouette&quot; % &quot;4.0.0&quot;, &quot;com.mohiva&quot &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -40,7 +41,7 @@
   <header role="banner"><hgroup>
   <h1><a href="/">一念天堂</a></h1>
   
-    <h2>“我拥有的都是侥幸啊,我失去的都是人生”</h2>
+    <h2>“拥有的都是侥幸，失去的都是人生”</h2>
   
 </hgroup>
 
@@ -71,7 +72,7 @@
   
   <header>
     
-      <h1 class="entry-title">Playframework Silhouette 用户框架之基本配置和 Token 生成篇</h1>
+      <h1 class="entry-title">Playframework Silhouette 用户框架之基本配置和 Json Web Token 生成篇</h1>
     
     
       <p class="meta">
@@ -96,9 +97,11 @@
 <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
+<span class='line-number'>4</span>
 </pre></td><td class='code'><pre><code class='scala'><span class='line'>  <span class="n">libraryDependencies</span> <span class="o">++=</span> <span class="nc">Seq</span><span class="o">(</span><span class="s">&quot;com.mohiva&quot;</span> <span class="o">%%</span> <span class="s">&quot;play-silhouette&quot;</span> <span class="o">%</span> <span class="s">&quot;4.0.0&quot;</span><span class="o">,</span>
 </span><span class='line'>  <span class="s">&quot;com.mohiva&quot;</span> <span class="o">%%</span> <span class="s">&quot;play-silhouette-password-bcrypt&quot;</span> <span class="o">%</span> <span class="s">&quot;4.0.0&quot;</span><span class="o">,</span>
-</span><span class='line'>  <span class="s">&quot;com.mohiva&quot;</span> <span class="o">%%</span> <span class="s">&quot;play-silhouette-persistence&quot;</span> <span class="o">%</span> <span class="s">&quot;4.0.0&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="s">&quot;com.mohiva&quot;</span> <span class="o">%%</span> <span class="s">&quot;play-silhouette-persistence&quot;</span> <span class="o">%</span> <span class="s">&quot;4.0.0&quot;</span> <span class="c1">// 如果想让 token stateful 就需引入</span>
+</span><span class='line'>  <span class="o">)</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -126,8 +129,10 @@
 <span class='line-number'>13</span>
 <span class='line-number'>14</span>
 <span class='line-number'>15</span>
+<span class='line-number'>16</span>
 </pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">silhouette</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">authenticator</span><span class="o">.</span><span class="n">headerName</span> <span class="k">=</span> <span class="s">&quot;X-Auth-Token&quot;</span>
+</span><span class='line'>  <span class="c1">// 定义 JWT 的 header 属性</span>
+</span><span class='line'>  <span class="n">authenticator</span><span class="o">.</span><span class="n">headerName</span> <span class="k">=</span> <span class="s">&quot;X-Auth-Token&quot;</span> <span class="c1">// 在 http 头中的字段名</span>
 </span><span class='line'>  <span class="n">authenticator</span><span class="o">.</span><span class="n">issuerClaim</span> <span class="k">=</span> <span class="s">&quot;waylens&quot;</span>
 </span><span class='line'>  <span class="n">authenticator</span><span class="o">.</span><span class="n">encryptSubject</span> <span class="k">=</span> <span class="kc">false</span>
 </span><span class='line'>  <span class="n">authenticator</span><span class="o">.</span><span class="n">authenticatorExpiry</span> <span class="k">=</span> <span class="s">&quot;365d&quot;</span>
@@ -297,8 +302,56 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
+<p>  核心：bind[<em>Silhouette</em>[JWTEnv]].to[<em>SilhouetteProvider</em>[JWTEnv]]</p>
+
+<figure class='code'><figcaption><span>SilhouetteProvider 在库中定义 </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">class</span> <span class="nc">SilhouetteProvider</span><span class="o">[</span><span class="kt">E</span> <span class="k">&lt;:</span> <span class="kt">Env</span><span class="o">]</span> <span class="nc">@Inject</span><span class="o">()</span> <span class="o">(</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">env</span><span class="k">:</span> <span class="kt">Environment</span><span class="o">[</span><span class="kt">E</span><span class="o">],</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">securedAction</span><span class="k">:</span> <span class="kt">SecuredAction</span><span class="o">,</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">unsecuredAction</span><span class="k">:</span> <span class="kt">UnsecuredAction</span><span class="o">,</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">userAwareAction</span><span class="k">:</span> <span class="kt">UserAwareAction</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">extends</span> <span class="nc">Silhouette</span><span class="o">[</span><span class="kt">E</span><span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 配置类提供了其所需要的 Environment</span>
+</span><span class='line'><span class="nd">@Provides</span>
+</span><span class='line'><span class="k">def</span> <span class="n">provideEnvironment</span><span class="o">(</span>
+</span><span class='line'>  <span class="n">userService</span><span class="k">:</span> <span class="kt">UserService</span><span class="o">,</span>
+</span><span class='line'>  <span class="n">authenticatorService</span><span class="k">:</span> <span class="kt">AuthenticatorService</span><span class="o">[</span><span class="kt">JWTAuthenticator</span><span class="o">],</span>
+</span><span class='line'>  <span class="n">eventBus</span><span class="k">:</span> <span class="kt">EventBus</span><span class="o">)</span><span class="k">:</span> <span class="kt">Environment</span><span class="o">[</span><span class="kt">JWTEnv</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nc">Environment</span><span class="o">[</span><span class="kt">JWTEnv</span><span class="o">](</span>
+</span><span class='line'>    <span class="n">userService</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">authenticatorService</span><span class="o">,</span>
+</span><span class='line'>    <span class="nc">Seq</span><span class="o">.</span><span class="n">empty</span><span class="o">,</span>
+</span><span class='line'>    <span class="n">eventBus</span>
+</span><span class='line'>  <span class="o">)</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
 <ul>
-<li>在配置中启用 SilhouetteModule 模块</li>
+<li>在 play 配置文件中启用 SilhouetteModule 模块</li>
 </ul>
 
 
@@ -319,7 +372,7 @@
 </ul>
 
 
-<figure class='code'><figcaption><span>依赖代码 </span></figcaption>
+<figure class='code'><figcaption><span>依赖的库源码 </span></figcaption>
 <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -505,7 +558,7 @@
 </span><span class='line'><span class="cm">          * create 的函数定义为： </span>
 </span><span class='line'><span class="cm">          * def create(loginInfo: LoginInfo)(implicit request: RequestHeader): Future[T]</span>
 </span><span class='line'><span class="cm">          * T 会被解析为 JWTEnv#A，且 type A = JWTAuthenticator，</span>
-</span><span class='line'><span class="cm">          * 因此 authenticator 的类型为 JWTAuthenticator，至于 JWT 下篇再叙，</span>
+</span><span class='line'><span class="cm">          * 因此 authenticator 的类型为 JWTAuthenticator，</span>
 </span><span class='line'><span class="cm">          * 同时给 authenticator 传入了自定义的 token 版本号</span>
 </span><span class='line'><span class="cm">          *</span>
 </span><span class='line'><span class="cm">          * init 的函数定义为：</span>
@@ -532,6 +585,37 @@
 </span><span class='line'>    <span class="o">}</span>
 </span><span class='line'>  <span class="o">}</span>
 </span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><p>核心小结</p>
+
+<ol>
+<li><p>后台随机生成 userID ，组装成 <strong>LoginInfo</strong></p></li>
+<li><p><strong>AuthenticatorService.create</strong>(loginInfo) 得到 <strong>JWTAuthenticator</strong>， 接着可以向它塞进 <em>JWTVersion</em> 等客制化校验信息</p></li>
+<li><p><strong>AuthenticatorService.init</strong>(jwtAuthenticator) 得到 token，这里会按 JWTAuthenticator 的类型对 jwtAuthenticator 所携带信息（LoginInfo, JWTVersion 等）进行加密得到一个 JWT（<strong>header.payload.secret</strong>）</p></li>
+<li><p>userID -> LoginInfo -> JWTAuthenticator -> token</p></li>
+</ol>
+</li>
+</ul>
+
+
+<figure class='code'><figcaption><span>让我再看你一遍 JWTAuthenticator </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="nc">JWTAuthenticator</span><span class="o">(</span>
+</span><span class='line'>  <span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
+</span><span class='line'>  <span class="n">loginInfo</span><span class="k">:</span> <span class="kt">LoginInfo</span><span class="o">,</span>
+</span><span class='line'>  <span class="n">lastUsedDateTime</span><span class="k">:</span> <span class="kt">DateTime</span><span class="o">,</span>
+</span><span class='line'>  <span class="n">expirationDateTime</span><span class="k">:</span> <span class="kt">DateTime</span><span class="o">,</span>
+</span><span class='line'>  <span class="n">idleTimeout</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">FiniteDuration</span><span class="o">],</span>
+</span><span class='line'>  <span class="n">customClaims</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">JsObject</span><span class="o">]</span> <span class="k">=</span> <span class="nc">None</span><span class="o">)</span>
 </span></code></pre></td></tr></table></div></figure>
 
 </div>
@@ -578,6 +662,8 @@
         <a class="basic-alignment left" href="/blog/2016/05/28/test/" title="Previous Post: 如文">&laquo; 如文</a>
       
       
+        <a class="basic-alignment right" href="/blog/2017/11/21/silhouette2/" title="Next Post: Playframework Silhouette 用户框架之权限校验篇">Playframework Silhouette 用户框架之权限校验篇 &raquo;</a>
+      
     </p>
   </footer>
 </article>
@@ -591,7 +677,11 @@
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2017/11/21/silhouette1/">Playframework Silhouette 用户框架之基本配置和 Token 生成篇</a>
+        <a href="/blog/2017/11/21/silhouette2/">Playframework Silhouette 用户框架之权限校验篇</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/11/21/silhouette1/">Playframework Silhouette 用户框架之基本配置和 Json Web Token 生成篇</a>
       </li>
     
       <li class="post">
@@ -605,9 +695,9 @@
 <section class="well">
   <h1>Categories</h1>
   <ul id="categories" class="nav nav-list">
-    <li class='category'><a href='/blog/categories/framework/'>framework (1)</a></li>
-<li class='category'><a href='/blog/categories/scala/'>scala (1)</a></li>
-<li class='category'><a href='/blog/categories/silhouette/'>silhouette (1)</a></li>
+    <li class='category'><a href='/blog/categories/framework/'>framework (2)</a></li>
+<li class='category'><a href='/blog/categories/scala/'>scala (2)</a></li>
+<li class='category'><a href='/blog/categories/silhouette/'>silhouette (2)</a></li>
 
   </ul>
 </section>
