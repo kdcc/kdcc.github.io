@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Framework | 一念天堂]]></title>
   <link href="http://kdcc.github.io/blog/categories/framework/atom.xml" rel="self"/>
   <link href="http://kdcc.github.io/"/>
-  <updated>2017-11-23T14:18:55+08:00</updated>
+  <updated>2017-11-23T20:54:16+08:00</updated>
   <id>http://kdcc.github.io/</id>
   <author>
     <name><![CDATA[kd]]></name>
@@ -12,6 +12,411 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Playframework Silhouette 用户框架官方文档整理]]></title>
+    <link href="http://kdcc.github.io/blog/2017/11/23/silhouette3/"/>
+    <updated>2017-11-23T18:11:01+08:00</updated>
+    <id>http://kdcc.github.io/blog/2017/11/23/silhouette3</id>
+    <content type="html"><![CDATA[<p>本文整合下 <a href="https://www.silhouette.rocks/docs">Silhouette 官方文档</a> 要点，纯粹摘录以备忘，完整请参考原链。</p>
+
+<!-- more -->
+
+
+<h2>Environment</h2>
+
+<blockquote><p>An application can provide different environments for different environment types. With this it&rsquo;s possible to create endpoints that can handle different identitity -> authenticator combinations.</p></blockquote>
+
+<h2>RequestHandler</h2>
+
+<blockquote><p>In Silhouette, request handlers are the foundation to handle secured endpoints and the building blocks for the more specific action types. A request handler can execute an arbitrary block of code and must return a HandlerResult.</p>
+
+<p>There exists a SecuredRequestHandler which intercepts requests and checks if there is an authenticated user. If there is one, the execution continues and the enclosed code is invoked.
+<figure class='code'><figcaption><span>SecuredRequestHandler </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">securedRequestHandler</span> <span class="k">=</span> <span class="nc">Action</span><span class="o">.</span><span class="n">async</span> <span class="o">{</span> <span class="k">implicit</span> <span class="n">request</span> <span class="k">=&gt;</span>
+</span><span class='line'>  <span class="n">silhouette</span><span class="o">.</span><span class="nc">SecuredRequestHandler</span> <span class="o">{</span> <span class="n">securedRequest</span> <span class="k">=&gt;</span>
+</span><span class='line'>    <span class="nc">Future</span><span class="o">.</span><span class="n">successful</span><span class="o">(</span><span class="nc">HandlerResult</span><span class="o">(</span><span class="nc">Ok</span><span class="o">,</span> <span class="nc">Some</span><span class="o">(</span><span class="n">securedRequest</span><span class="o">.</span><span class="n">identity</span><span class="o">)))</span>
+</span><span class='line'>  <span class="o">}.</span><span class="n">map</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">case</span> <span class="nc">HandlerResult</span><span class="o">(</span><span class="n">r</span><span class="o">,</span> <span class="nc">Some</span><span class="o">(</span><span class="n">user</span><span class="o">))</span> <span class="k">=&gt;</span> <span class="nc">Ok</span><span class="o">(</span><span class="nc">Json</span><span class="o">.</span><span class="n">toJson</span><span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="n">loginInfo</span><span class="o">))</span>
+</span><span class='line'>    <span class="k">case</span> <span class="nc">HandlerResult</span><span class="o">(</span><span class="n">r</span><span class="o">,</span> <span class="nc">None</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="nc">Unauthorized</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+Silhouette provides a replacement for Play’s built in Action class named <strong>SecuredAction</strong> which is based on the SecuredRequestHandler
+<figure class='code'><figcaption><span>SecuredAction </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">index</span> <span class="k">=</span> <span class="n">silhouette</span><span class="o">.</span><span class="nc">SecuredAction</span> <span class="o">{</span> <span class="k">implicit</span> <span class="n">request</span> <span class="k">=&gt;</span>
+</span><span class='line'>  <span class="nc">Ok</span><span class="o">(</span><span class="n">views</span><span class="o">.</span><span class="n">html</span><span class="o">.</span><span class="n">index</span><span class="o">(</span><span class="n">request</span><span class="o">.</span><span class="n">identity</span><span class="o">))</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></p></blockquote>
+
+<h2>Error handlers</h2>
+
+<blockquote><p>If the access to an endpoint will be denied then it&rsquo;s possible to provide an error handler to handle the incoming request and return an appropriate result.</p>
+
+<p>Every request handler may provide it&rsquo;s own error handler implementation.</p></blockquote>
+
+<p>All different types of error handlers:</p>
+
+<blockquote><p>Local error handlers</p>
+
+<p>Exception handler</p>
+
+<p>UnsecuredErrorHandler</p>
+
+<p>SecuredErrorHandler</p></blockquote>
+
+<p><figure class='code'><figcaption><span>SecuredErrorHandler </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">class</span> <span class="nc">CustomSecuredErrorHandler</span> <span class="k">extends</span> <span class="nc">SecuredErrorHandler</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">/&lt;</span><span class="n">em</span><span class="o">&gt;*</span>
+</span><span class='line'>    <span class="o">*</span> <span class="nc">Called</span> <span class="n">when</span> <span class="n">a</span> <span class="n">user</span> <span class="n">is</span> <span class="n">not</span> <span class="n">authenticated</span><span class="o">.</span>
+</span><span class='line'>    <span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;/</span>
+</span><span class='line'>  <span class="k">override</span> <span class="k">def</span> <span class="n">onNotAuthenticated</span><span class="o">(</span><span class="k">implicit</span> <span class="n">request</span><span class="k">:</span> <span class="kt">RequestHeader</span><span class="o">)</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="nc">Future</span><span class="o">.</span><span class="n">successful</span><span class="o">(</span><span class="nc">Unauthorized</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">/&lt;</span><span class="n">em</span><span class="o">&gt;*</span>
+</span><span class='line'>    <span class="o">*</span> <span class="nc">Called</span> <span class="n">when</span> <span class="n">a</span> <span class="n">user</span> <span class="n">is</span> <span class="n">authenticated</span> <span class="n">but</span> <span class="n">not</span> <span class="n">authorized</span><span class="o">.</span>
+</span><span class='line'>    <span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;/</span>
+</span><span class='line'>  <span class="k">override</span> <span class="k">def</span> <span class="n">onNotAuthorized</span><span class="o">(</span><span class="k">implicit</span> <span class="n">request</span><span class="k">:</span> <span class="kt">RequestHeader</span><span class="o">)</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="nc">Future</span><span class="o">.</span><span class="n">successful</span><span class="o">(</span><span class="nc">Forbidden</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;//</span> <span class="n">bind</span> <span class="n">it</span> <span class="n">in</span> <span class="nc">SilhouetteModule</span><span class="o">.</span><span class="n">scala</span>
+</span><span class='line'><span class="o">..</span>
+</span><span class='line'><span class="n">bind</span><span class="o">[</span><span class="kt">SecuredErrorHandler</span><span class="o">].</span><span class="n">to</span><span class="o">[</span><span class="kt">CustomSecuredErrorHandler</span><span class="o">]</span>
+</span><span class='line'><span class="o">..</span>
+</span></code></pre></td></tr></table></div></figure></p>
+
+<h2>Filters</h2>
+
+<blockquote><p>Play provides a simple filter API for applying global filters to each request. Such a filter is basically the same as an action. It produces a request and returns a result.</p>
+
+<p>So it&rsquo;s possible to use the actions provided by Silhouette inside a filter to create a global authentication mechanism.
+<figure class='code'><figcaption><span>Filter </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">class</span> <span class="nc">SecuredFilter</span> <span class="nd">@Inject</span><span class="o">()</span> <span class="o">(</span><span class="n">silhouette</span><span class="k">:</span> <span class="kt">Silhouette</span><span class="o">[</span><span class="kt">DefaultEnv</span><span class="o">],</span> <span class="n">bodyParsers</span><span class="k">:</span> <span class="kt">PlayBodyParsers</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">Filter</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;&lt;/</span><span class="n">blockquote</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">override</span> <span class="k">def</span> <span class="n">apply</span><span class="o">(</span><span class="n">next</span><span class="k">:</span> <span class="kt">RequestHeader</span> <span class="o">=&gt;</span> <span class="nc">Future</span><span class="o">[</span><span class="kt">Result</span><span class="o">])(</span>
+</span><span class='line'>    <span class="n">request</span><span class="k">:</span> <span class="kt">RequestHeader</span><span class="o">)</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">Result</span><span class="o">]</span> <span class="k">=</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;//</span> <span class="nc">As</span> <span class="n">the</span> <span class="n">body</span> <span class="n">of</span> <span class="n">request</span> <span class="n">can</span><span class="-Symbol">&#39;t</span> <span class="n">be</span> <span class="n">parsed</span> <span class="n">twice</span> <span class="n">in</span> <span class="nc">Play</span> <span class="n">we</span> <span class="n">should</span> <span class="n">force</span>
+</span><span class='line'><span class="c1">// to parse empty body for UserAwareAction</span>
+</span><span class='line'><span class="k">val</span> <span class="n">action</span> <span class="k">=</span> <span class="n">silhouette</span><span class="o">.</span><span class="nc">UserAwareAction</span><span class="o">.</span><span class="n">async</span><span class="o">(</span><span class="n">bodyParsers</span><span class="o">.</span><span class="n">empty</span><span class="o">)</span> <span class="o">{</span> <span class="n">r</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span>
+</span><span class='line'>  <span class="n">request</span><span class="o">.</span><span class="n">path</span> <span class="k">match</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">case</span> <span class="s">&quot;/admin&quot;</span> <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">identity</span><span class="o">.</span><span class="n">isEmpty</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="nc">Future</span><span class="o">.</span><span class="n">successful</span><span class="o">(</span><span class="nc">Unauthorized</span><span class="o">)</span>
+</span><span class='line'>    <span class="k">case</span> <span class="k">_</span> <span class="o">=&amp;</span><span class="n">gt</span><span class="o">;</span> <span class="n">next</span><span class="o">(</span><span class="n">request</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">action</span><span class="o">(</span><span class="n">request</span><span class="o">).</span><span class="n">run</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></p>
+
+<h2>Authorization</h2>
+
+<blockquote><p>Silhouette provides a way to add authorization logic to your secured endpoints. This is done by implementing an Authorization object that is passed to all SecuredRequestHandler and SecuredAction as a parameter.
+<figure class='code'><figcaption><span>Filter </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">trait</span> <span class="nc">Authorization</span><span class="o">[</span><span class="kt">I</span> <span class="kt">&amp;lt</span><span class="err">;</span><span class="kt">:</span> <span class="kt">Identity</span>, <span class="kt">A</span> <span class="kt">&amp;lt</span><span class="err">;</span><span class="kt">:</span> <span class="kt">Authenticator</span><span class="o">]</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;&lt;/</span><span class="n">blockquote</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">/&lt;</span><span class="n">em</span><span class="o">&gt;*</span>
+</span><span class='line'>   <span class="o">*</span> <span class="nc">Checks</span> <span class="n">whether</span> <span class="n">the</span> <span class="n">user</span> <span class="n">is</span> <span class="n">authorized</span> <span class="n">to</span> <span class="n">execute</span> <span class="n">an</span> <span class="n">endpoint</span> <span class="n">or</span> <span class="n">not</span><span class="o">.</span>
+</span><span class='line'>   <span class="o">*</span>
+</span><span class='line'>   <span class="o">*</span> <span class="nd">@param</span> <span class="n">identity</span> <span class="nc">The</span> <span class="n">current</span> <span class="n">identity</span> <span class="n">instance</span><span class="o">.</span>
+</span><span class='line'>   <span class="o">*</span> <span class="nd">@param</span> <span class="n">authenticator</span> <span class="nc">The</span> <span class="n">current</span> <span class="n">authenticator</span> <span class="n">instance</span><span class="o">.</span>
+</span><span class='line'>   <span class="o">*</span> <span class="nd">@param</span> <span class="n">request</span> <span class="nc">The</span> <span class="n">current</span> <span class="n">request</span><span class="o">.</span>
+</span><span class='line'>   <span class="o">*</span> <span class="nd">@tparam</span> <span class="n">B</span> <span class="nc">The</span> <span class="k">type</span> <span class="kt">of</span> <span class="kt">the</span> <span class="kt">request</span> <span class="kt">body.</span>
+</span><span class='line'>   <span class="kt">*</span> <span class="kt">@return</span> <span class="kt">True</span> <span class="kt">if</span> <span class="kt">the</span> <span class="kt">user</span> <span class="kt">is</span> <span class="kt">authorized</span><span class="o">,</span> <span class="kc">false</span> <span class="n">otherwise</span><span class="o">.</span>
+</span><span class='line'>   <span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;/</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">isAuthorized</span><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;identity:%20I,%20authenticator:%20A&quot;</span><span class="o">&gt;</span><span class="n">B</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;(</span>
+</span><span class='line'>    <span class="k">implicit</span> <span class="n">request</span><span class="k">:</span> <span class="kt">Request</span><span class="o">[</span><span class="kt">B</span><span class="o">])</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">Boolean</span><span class="o">]</span>
+</span><span class='line'><span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">case</span> <span class="k">class</span> <span class="nc">WithProvider</span><span class="o">(</span><span class="n">provider</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">Authorization</span><span class="o">[</span><span class="kt">User</span>, <span class="kt">CookieAuthenticator</span><span class="o">]</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">def</span> <span class="n">isAuthorized</span><span class="o">&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s">&quot;user:%20User,%20authenticator:%20CookieAuthenticator&quot;</span><span class="o">&gt;</span><span class="n">B</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;(</span>
+</span><span class='line'>    <span class="k">implicit</span> <span class="n">request</span><span class="k">:</span> <span class="kt">Request</span><span class="o">[</span><span class="kt">B</span><span class="o">])</span> <span class="k">=</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="nc">Future</span><span class="o">.</span><span class="n">successful</span><span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="n">loginInfo</span><span class="o">.</span><span class="n">providerID</span> <span class="o">==</span> <span class="n">provider</span><span class="o">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}</span>
+</span><span class='line'><span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">class</span> <span class="nc">Application</span><span class="o">(</span><span class="n">silhouette</span><span class="k">:</span> <span class="kt">Silhouette</span><span class="o">[</span><span class="kt">DefaultEnv</span><span class="o">])</span> <span class="k">extends</span> <span class="nc">Controller</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">def</span> <span class="n">myAction</span> <span class="k">=</span> <span class="n">silhouette</span><span class="o">.</span><span class="nc">SecuredAction</span><span class="o">(</span><span class="nc">WithProvider</span><span class="o">(&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="n">twitter</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;))</span> <span class="o">{</span> <span class="k">implicit</span> <span class="n">request</span> <span class="k">=&gt;</span>
+</span><span class='line'>    <span class="c1">// do something here</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+You can use the logical <code>!</code>, <code>&amp;&amp;</code> and <code>||</code> operators to create logical expressions with your Authorization instances. You also need to have an implicit ExecutionContext in scope.</p>
+
+<h2>Iddentity</h2>
+
+<blockquote><p>Silhouette defines a user through its Identity trait. This trait doesn&rsquo;t define any defaults. Thus, you are free to design your user according to your needs.</p>
+
+<p>The LoginInfo case class acts as Silhouette’s identity ID, and it helps identify users in the Silhouette workflow.</p></blockquote>
+
+<p><figure class='code'><figcaption><span>IdentityService </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">class</span> <span class="nc">UserService</span><span class="o">(</span><span class="n">userDAO</span><span class="k">:</span> <span class="kt">UserDAO</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">IdentityService</span><span class="o">[</span><span class="kt">User</span><span class="o">]</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">/&lt;</span><span class="n">em</span><span class="o">&gt;*</span>
+</span><span class='line'>   <span class="o">*</span> <span class="nc">Retrieves</span> <span class="n">a</span> <span class="n">user</span> <span class="n">that</span> <span class="n">matches</span> <span class="n">the</span> <span class="n">specified</span> <span class="n">login</span> <span class="n">info</span><span class="o">.</span>
+</span><span class='line'>   <span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;/</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">retrieve</span><span class="o">(</span><span class="n">loginInfo</span><span class="k">:</span> <span class="kt">LoginInfo</span><span class="o">)</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">Option</span><span class="o">[</span><span class="kt">User</span><span class="o">]]</span> <span class="k">=</span> <span class="n">userDAO</span><span class="o">.</span><span class="n">findByLoginInfo</span><span class="o">(</span><span class="n">loginInfo</span><span class="o">)</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></p>
+
+<h2>Authenticator &amp; Authenticator Service</h2>
+
+<blockquote><p>Authenticator recognizes a user on every request after a successful authentication.</p>
+
+<p>It&rsquo;s a small class which stores only some data like its validity and the linked login information for an identity</p></blockquote>
+
+<ul>
+<li><p>Every Authenticator has an associated <strong>Authenticator Service</strong> which implements the Authenticator&rsquo;s functionality. This service is responsible for the following actions:</p>
+
+<ol>
+<li><p><em>Create</em> an Authenticator</p>
+
+<blockquote><p>Creates a new Authenticator from the an identity&rsquo;s login information. This action should be executed after a successful authentication.</p>
+
+<p>The created Authenticator can then be used to recognize the user on every subsequent request.</p></blockquote></li>
+<li><p><em>Initialize</em> an Authenticator</p></li>
+<li><p><em>Embed</em> an Authenticator</p>
+
+<blockquote><p>After initialization, an Authenticator must be embedded into a Play framework request or result. Embedding the Authenticator-related data into the result means that the data will be sent to the client.</p>
+
+<p>It may also be useful to embed the Authenticator-related data into an incoming request to lead a Silhouette endpoint to believe that the request is a new request which contains a valid Authenticator. This is typically done in tests or Play filters.</p></blockquote></li>
+<li><p><em>Touch</em> an Authenticator</p></li>
+<li><p><em>Update</em> an Authenticator</p>
+
+<blockquote><p>Automatically updates the state of an Authenticator on every request to a Silhouette endpoint. Updated Authenticators will be embedded into the Play framework result before sending it to the client.</p>
+
+<p>If the service uses a backing store, then the Authenticator instance will be updated in the store, too.</p></blockquote></li>
+<li><p><em>Renew</em> an Authenticator</p>
+
+<blockquote><p>Authenticators have a fixed expiration date. With this method it is possible to renew the expiration of an Authenticator by discarding the old one and creating a new one.</p></blockquote></li>
+<li><p><em>Discard</em> an Authenticator</p></li>
+</ol>
+</li>
+<li><p>Different types of Authenticator:</p>
+
+<ol>
+<li>CookieAuthenticator
+
+<blockquote><p>It works either by storing an ID in a cookie to track the authenticated user and a server-side backing store that maps the ID to an Authenticator instance or by a stateless approach that stores the Authenticator in a serialized form directly into the cookie.</p></blockquote></li>
+<li>SessionAuthenticator
+
+<blockquote><p>It works by storing a serialized authenticator instance in the Play Framework session cookie.</p></blockquote></li>
+<li>BearerTokenAuthenticator
+
+<blockquote><p>It works by transporting a token in a user-defined header to track the authenticated user and a server-side backing store that maps the token to an Authenticator instance.</p></blockquote></li>
+<li>JWTAuthenticator
+
+<blockquote><p>The JWTAuthenticator uses a header-based approach with the help of a [JWT] (JSON Web Token). It works by using a JWT to transport the Authenticator data inside a user-defined header. It can be stateless with the disadvantages that the JWT can’t be invalidated.</p>
+
+<p>The stateful or stateless approach is selected depending on whether a AuthenticatorRepository was supplied to the authenticator service.</p></blockquote></li>
+<li>DummyAuthenticator</li>
+</ol>
+</li>
+</ul>
+
+
+<h2>Provider</h2>
+
+<blockquote><p>In Silhouette a provider is a service that handles the authentication of an identity. It typically reads authorization information and returns information about an identity.</p></blockquote>
+
+<h2>Persistence</h2>
+
+<p>Silhouette has only two points where it needs to read or write data from an underlying persistence layer:</p>
+
+<ul>
+<li><p>Authenticators</p>
+
+<blockquote><p>Some authenticators have the need to persistent either the complete authenticator or parts of the authenticator in a backing store. These kind of authenticators have a dependency to the AuthenticatorRepository which provides a well defined interface</p></blockquote></li>
+<li><p>Providers</p>
+
+<blockquote><p>Currently the password based providers like the BasicAuthProvider or the CredentialsProvider needs the ability to read the PasswordInfo from a persistence layer during authentication.</p>
+
+<p>These kind of providers have a dependency to the AuthInfoRepository, which provides a well defined interface, that can be implemented to persistent the AuthInfo into any kind of data storage.
+<figure class='code'><figcaption><span>Persistence</span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="n">libraryDependencies</span> <span class="o">++=</span> <span class="nc">Seq</span><span class="o">(</span>
+</span><span class='line'><span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="n">com</span><span class="o">.</span><span class="n">mohiva</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;</span> <span class="o">%%</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="n">play</span><span class="o">-</span><span class="n">silhouette</span><span class="o">-</span><span class="n">persistence</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;</span> <span class="o">%</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="mf">4.0</span><span class="o">.</span><span class="mi">0</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;</span>
+</span><span class='line'><span class="o">)&lt;/</span><span class="n">p</span><span class="o">&gt;&lt;/</span><span class="n">blockquote</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="nc">In</span> <span class="n">the</span> <span class="n">package</span><span class="o">,</span> <span class="n">there</span> <span class="n">are</span><span class="k">:</span>
+</span><span class='line'><span class="kt">CacheAuthenticatorRepository</span>
+</span><span class='line'>  <span class="nc">An</span> <span class="n">implementation</span> <span class="n">of</span> <span class="n">the</span> <span class="nc">AuthenticatorRepository</span> <span class="n">which</span> <span class="n">uses</span> <span class="n">a</span> <span class="n">cache</span> <span class="n">to</span> <span class="n">store</span> <span class="n">the</span> <span class="n">authenticator</span> <span class="n">artifacts</span><span class="o">.&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="nc">DelegableAuthInfoRepository</span>
+</span><span class='line'>  <span class="nc">An</span> <span class="n">implementation</span> <span class="n">of</span> <span class="n">the</span> <span class="nc">AuthInfoRepository</span> <span class="n">which</span> <span class="n">delegates</span> <span class="n">the</span> <span class="n">storage</span> <span class="n">of</span> <span class="n">an</span> <span class="nc">AuthInfo</span> <span class="n">instance</span> <span class="n">to</span> <span class="n">its</span> <span class="n">appropriate</span> <span class="nc">DAO</span>
+</span></code></pre></td></tr></table></div></figure></p></li>
+</ul>
+
+
+<h2>Rate limiting</h2>
+
+<blockquote><p>You can do this with <a href="https://github.com/sief/play-guard">play-guard</a>.</p></blockquote>
+
+<p><figure class='code'><figcaption><span>Rate limiting </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'>  <span class="k">object</span> <span class="nc">UserLimiter</span> <span class="o">{&amp;</span><span class="n">hellip</span><span class="o">;}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">class</span> <span class="nc">MyController</span> <span class="nd">@Inject</span><span class="o">()(</span><span class="n">silhouette</span><span class="k">:</span> <span class="kt">Silhouette</span><span class="o">[</span><span class="kt">MyEnv</span><span class="o">])(</span><span class="k">implicit</span> <span class="n">ac</span><span class="k">:</span> <span class="kt">ActorSystem</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">Controller</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">private</span> <span class="k">val</span> <span class="n">defaultUserFilter</span> <span class="k">=</span> <span class="nc">UserLimiter</span><span class="o">.</span><span class="n">defaultUserFilter</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="k">def</span> <span class="n">myAction</span><span class="k">:</span> <span class="kt">Action</span><span class="o">[</span><span class="kt">AnyContent</span><span class="o">]</span> <span class="k">=</span> <span class="o">(</span><span class="n">silhouette</span><span class="o">.</span><span class="nc">SecuredAction</span> <span class="n">andThen</span> <span class="n">defaultUserFilter</span><span class="o">).</span><span class="n">async</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">implicit</span> <span class="n">request</span> <span class="o">=&gt;&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;//..</span><span class="nc">Your</span> <span class="n">custom</span> <span class="n">logic</span> <span class="n">here</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></p>
+
+<h2>Events</h2>
+
+<blockquote><p>Silhouette provides event handling based on Akka’s Event Bus.</p></blockquote>
+
+<h2>Logging</h2>
+
+<p><figure class='code'><figcaption><span>log setting </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'>  <span class="o">&lt;</span><span class="n">configuration</span> <span class="n">debug</span><span class="o">=</span><span class="s">&quot;false&quot;</span><span class="o">&gt;</span>
+</span><span class='line'>    <span class="o">&amp;</span><span class="n">hellip</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">&lt;</span><span class="n">logger</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;com.mohiva&quot;</span> <span class="n">level</span><span class="o">=</span><span class="s">&quot;ERROR&quot;</span> <span class="o">/&gt;</span>
+</span><span class='line'>    <span class="o">&lt;</span><span class="n">logger</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;com.mohiva.play.silhouette.api.Silhouette&quot;</span> <span class="n">level</span><span class="o">=</span><span class="s">&quot;INFO&quot;</span> <span class="o">/&gt;</span>
+</span><span class='line'>    <span class="o">&amp;</span><span class="n">hellip</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">&lt;/</span><span class="n">configuration</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+To use the named logger you only need to mix the Logger trait into your class or trait.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Playframework Silhouette 用户框架之权限校验篇]]></title>
