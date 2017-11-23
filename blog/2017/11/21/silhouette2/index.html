@@ -207,6 +207,13 @@
 <span class='line-number'>21</span>
 <span class='line-number'>22</span>
 <span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
 </pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">trait</span> <span class="nc">Authorization</span><span class="o">[</span><span class="kt">I</span> <span class="k">&lt;:</span> <span class="kt">Identity</span>, <span class="kt">A</span> <span class="k">&lt;:</span> <span class="kt">Authenticator</span><span class="o">]</span> <span class="o">{</span>
 </span><span class='line'>
 </span><span class='line'>  <span class="cm">/**</span>
@@ -228,6 +235,13 @@
 </span><span class='line'>    <span class="k">implicit</span> <span class="n">request</span><span class="k">:</span> <span class="kt">Request</span><span class="o">[</span><span class="kt">B</span><span class="o">])</span> <span class="k">=</span> <span class="o">{</span>
 </span><span class='line'>
 </span><span class='line'>    <span class="nc">Future</span><span class="o">.</span><span class="n">successful</span><span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="n">loginInfo</span><span class="o">.</span><span class="n">providerID</span> <span class="o">==</span> <span class="n">provider</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// 用法</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">Application</span><span class="o">(</span><span class="n">silhouette</span><span class="k">:</span> <span class="kt">Silhouette</span><span class="o">[</span><span class="kt">DefaultEnv</span><span class="o">])</span> <span class="k">extends</span> <span class="nc">Controller</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">myAction</span> <span class="k">=</span> <span class="n">silhouette</span><span class="o">.</span><span class="nc">SecuredAction</span><span class="o">(</span><span class="nc">WithProvider</span><span class="o">(</span><span class="s">&quot;twitter&quot;</span><span class="o">))</span> <span class="o">{</span> <span class="k">implicit</span> <span class="n">request</span> <span class="k">=&gt;</span>
+</span><span class='line'>    <span class="c1">// do something here</span>
 </span><span class='line'>  <span class="o">}</span>
 </span><span class='line'><span class="o">}</span>
 </span></code></pre></td></tr></table></div></figure>
