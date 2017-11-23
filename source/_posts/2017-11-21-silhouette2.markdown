@@ -77,6 +77,13 @@ case class WithProvider(provider: String) extends Authorization[User, CookieAuth
     Future.successful(user.loginInfo.providerID == provider)
   }
 }
+
+// 用法
+class Application(silhouette: Silhouette[DefaultEnv]) extends Controller {
+  def myAction = silhouette.SecuredAction(WithProvider("twitter")) { implicit request =>
+    // do something here
+  }
+}
 {% endcodeblock %}
 
 * 核心小结
