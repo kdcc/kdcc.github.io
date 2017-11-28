@@ -7,6 +7,6 @@ sharing: true
 footer: true
 ---
 
-Hi, I am kd.
+Hi, I'm kd.
 
-{% img left /images/sejie.png %}
+Fuck real.
