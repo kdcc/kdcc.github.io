@@ -19,7 +19,7 @@ categories: scala framework silhouette
 silhouette {
   // 定义 JWT 的 header 属性
   authenticator.headerName = "X-Auth-Token" // 在 http 头中的字段名
-  authenticator.issuerClaim = "waylens"
+  authenticator.issuerClaim = "kd"
   authenticator.encryptSubject = false
   authenticator.authenticatorExpiry = "365d"
   authenticator.sharedSecret= "changeme"
@@ -232,13 +232,13 @@ class UserController @Inject()(userService: UserService, silhouette: Silhouette[
           **/
           authenticator <- 
             silhouette.env.authenticatorService
-              .create(LoginInfo(ProviderKey.waylens.id.toString, user.userID))
+              .create(LoginInfo(ProviderKey.kd.id.toString, user.userID))
               .map(_.copy(id = loginID.toString, customClaims = Some(JsObject(Map("version"-> JsString(user.jwtVersion))))))
           token <- silhouette.env.authenticatorService.init(authenticator)
         } yield (token, authenticator)).map {
           case (token, authenticator) =>
             val res = SigninResponse(
-              user.identity.waylensUser,
+              user.identity.MyUser,
               token,
               // 同时返回 token 有效时长
               authenticator.expirationDateTime.getMillis / 1000 * 1000)
